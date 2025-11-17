@@ -11,6 +11,6 @@ package hms.hotelserver;
 public class HotelServer {
 
     public static void main(String[] args) {
-        System.out.println("안녕하요!");
+        System.out.println("안녕하시랕!");
     }
 }
