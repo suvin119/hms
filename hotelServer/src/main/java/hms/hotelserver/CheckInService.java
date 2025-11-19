@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CheckInService {
-    private static final String ROOM_FILE = "data/rooms.txt";
+    private static final String ROOM_FILE = "src/main/data/rooms.txt";
     private static final String RES_FILE = "data/reservations.txt";
 
     // 1. 예약 찾기 (기존과 동일)
