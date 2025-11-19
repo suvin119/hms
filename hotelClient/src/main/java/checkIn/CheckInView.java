@@ -7,7 +7,7 @@ package checkIn;
 /**
  *
  * @author subin
- * s test
+ * a test
  */
 
 import javax.swing.*;
