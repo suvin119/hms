@@ -10,69 +10,86 @@ package checkIn;
  */
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-public class CheckInView extends JFrame {
-    // 화면 구성 요소 선
+public class CheckInView extends JPanel {
+
     private JTextField tfReservationId = new JTextField(10);
     private JButton btnSearch = new JButton("예약 조회");
-    
+
     private JTextArea taInfo = new JTextArea(6, 30);
-    
+
+    private JTextField tfCheckOutDate = new JTextField(10);
     private JTextField tfRoomNumber = new JTextField(5);
     private JButton btnCheckIn = new JButton("체크인 확정");
 
-    public CheckInView() {
-        // 기본설정
-        setTitle("호텔 체크인 시스템");
-        setSize(400, 300);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // 닫으면 프로그램 종료
-        setLayout(new FlowLayout());
 
-        // 예약번호 패널
-        JPanel pnlTop = new JPanel();
+    public CheckInView() {
+        setLayout(new BorderLayout());
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JPanel pnlTop = new JPanel(new FlowLayout());
         pnlTop.add(new JLabel("예약번호: "));
         pnlTop.add(tfReservationId);
         pnlTop.add(btnSearch);
-        add(pnlTop);
+        add(pnlTop, BorderLayout.NORTH);
 
-        // 예약번호 기반 고객 정보 출력
-        taInfo.setEditable(false); // 사용자 수정 금지
-        taInfo.setText("예약 번호를 입력하고 조회하세요.");
-        add(new JScrollPane(taInfo)); 
-
-        // 체크인 객실 패널
-        JPanel pnlBottom = new JPanel();
-        pnlBottom.add(new JLabel("배정 객실: "));
-        pnlBottom.add(tfRoomNumber);
-        pnlBottom.add(btnCheckIn);
-        add(pnlBottom);
-
-        btnCheckIn.setEnabled(false); // 조회 전엔 버튼 비활성화
+        taInfo.setEditable(false);
+        taInfo.setText(" 예약 번호를 입력하고 조회하세요.");
         
-        setVisible(true); // 창 띄우기
+        taInfo.setBackground(Color.WHITE); 
+
+        JScrollPane scrollPane = new JScrollPane(taInfo);
+
+        scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+        
+        add(scrollPane, BorderLayout.CENTER);
+
+        JPanel pnlBottom = new JPanel();
+        pnlBottom.setLayout(new GridLayout(3, 1));
+
+        JPanel pnlRow1 = new JPanel(new FlowLayout());
+        pnlRow1.add(new JLabel("수정할 퇴실날짜: "));
+        pnlRow1.add(tfCheckOutDate);
+        pnlBottom.add(pnlRow1);
+
+        JPanel pnlRow2 = new JPanel(new FlowLayout());
+        pnlRow2.add(new JLabel("배정 객실: "));
+        pnlRow2.add(tfRoomNumber);
+        pnlBottom.add(pnlRow2);
+
+        JPanel pnlRow3 = new JPanel(new FlowLayout());
+        pnlRow3.add(btnCheckIn);
+        pnlBottom.add(pnlRow3);
+
+        add(pnlBottom, BorderLayout.SOUTH);
+
+        btnCheckIn.setEnabled(false);
     }
 
-    // Getter : 입력값 가져오기
+    // Getter
     public String getReservationId() { return tfReservationId.getText(); }
     public String getRoomNumber() { return tfRoomNumber.getText(); }
+    public String getCheckOutDate() { return tfCheckOutDate.getText(); }
 
-    // Setter : 화면 업데이트
+    // Setter (화면 갱신)
     public void setReservationInfo(Reservation r) {
-        taInfo.setText(" [예약 정보 확인]\n");
-        taInfo.append(" 고객명: " + r.getCustomerName() + "\n");
-        taInfo.append(" 투숙기간: " + r.getPeriod() + "\n");
-        taInfo.append(" 객실타입: " + r.getRoomType() + "\n");
+        taInfo.setText("\n [예약 정보 확인]\n");
+        taInfo.append(" ----------------------------------\n");
+        taInfo.append("  고객명 : " + r.getCustomerName() + "\n");
+        taInfo.append("  연락처 : " + r.getPhoneNumber() + "\n");
+        taInfo.append("  체크인 날짜 : " + r.getCheckInDate() + "\n");
+        taInfo.append("  인원 : " + r.getNumGuest() + "\n");
         
-        btnCheckIn.setEnabled(true); // 조회 성공 시 버튼 활성화
+        tfCheckOutDate.setText(r.getCheckOutDate()); // 날짜 자동 채움
+        btnCheckIn.setEnabled(true);
     }
 
-    public void showMessage(String msg) {
-        JOptionPane.showMessageDialog(this, msg);
-    }
+    // 리스너 등록
+    public void addSearchListener(ActionListener l) { btnSearch.addActionListener(l); }
+    public void addCheckInListener(ActionListener l) { btnCheckIn.addActionListener(l); }
 
-    // 이벤트 리스너 등록
-    public void addSearchListener(ActionListener listener) { btnSearch.addActionListener(listener); }
-    public void addCheckInListener(ActionListener listener) { btnCheckIn.addActionListener(listener); }
+    public void showMessage(String msg) { JOptionPane.showMessageDialog(this, msg); }
 }

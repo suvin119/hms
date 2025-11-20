@@ -11,8 +11,8 @@ import java.util.List;
 
 public class CheckInService {
     // 파일 경로 선언
-    private static final String ROOM_FILE = "src/main/data/rooms.txt";
-    private static final String RES_FILE = "src/main/data/reservations.txt";
+    private static final String ROOM_FILE = "src/main/resources/rooms.txt";
+    private static final String RES_FILE = "src/main/resources/reservations.txt";
 
     // 1. 예약 찾기
     public String findReservation(String targetId) {

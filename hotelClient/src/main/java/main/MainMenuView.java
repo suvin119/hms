@@ -9,7 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-public class MainMenuView extends JFrame {
+public class MainMenuView extends JPanel {
     
     private JButton btnReservation = new JButton("예약 등록");
     private JButton btnCheckIn = new JButton("체크인");
@@ -17,10 +17,6 @@ public class MainMenuView extends JFrame {
     private JButton btnRoomManage = new JButton("관리");
 
     public MainMenuView() {
-        setTitle("호텔 관리 시스템 - 메인");
-        setSize(500, 400);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // 화면 정중앙에 띄우기
         
         setLayout(new BorderLayout());
 
@@ -47,8 +43,6 @@ public class MainMenuView extends JFrame {
         buttonPanel.add(btnRoomManage);
 
         add(buttonPanel, BorderLayout.CENTER);
-
-        setVisible(true);
     }
 
     private void setFontForBtn(JButton btn) {

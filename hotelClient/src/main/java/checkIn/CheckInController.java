@@ -18,11 +18,20 @@ public class CheckInController {
     private CheckInView view;
     private final String SERVER_IP = "127.0.0.1";
     private final int SERVER_PORT = 9999;
+    
+    private Runnable onSuccessCallback;
 
     public CheckInController() {
         this.view = new CheckInView();
         initListeners(); // 버튼 초기화 동작
     }
+    
+    public void setOnSuccess(Runnable callback) {
+        this.onSuccessCallback = callback;
+    }
+    
+    // main 프레임에서 가져갈 수 있게 getter
+    public CheckInView getView() { return view; }
 
     private void initListeners() {
         // 조회 버튼(예약정보 가져오기)
@@ -38,11 +47,11 @@ public class CheckInController {
                 String response = sendRequest("FIND_RESERVATION|" + id); // 서버에 요청
                 
                 if (response.startsWith("SUCCESS")) { // 응답 처리
-                    // SUCCESS|R1001|홍길동|번호|체크인|체크아웃|타입|상태
+                    // SUCCESS|예약번호|고객 이름|연락처|체크인날짜|체크아웃날짜|인원 수|예약상태|객실번호
                     String[] p = response.split("\\|");
                     
                     // Model 객체 생성 - 서버에서 받은 문자열 데이터 자바 데이터로 변경
-                    Reservation res = new Reservation(p[1], p[2], p[3], p[4], p[5], p[6], p[7]);
+                    Reservation res = new Reservation(p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
                     
                     // view 업데이트
                     view.setReservationInfo(res);
@@ -59,15 +68,20 @@ public class CheckInController {
                 // view에서 객실번호, 예약번호 가져옴
                 String roomNum = view.getRoomNumber();
                 String resId = view.getReservationId();
+                String newCheckOutDate = view.getCheckOutDate();
                 
-                if (roomNum.isEmpty()) {
-                    view.showMessage("객실 번호를 입력하세요.");
+                if (roomNum.isEmpty() || newCheckOutDate.isEmpty()) {
+                    view.showMessage("객실 번호와 체크아웃 날짜를 확인하세요.");
                     return;
                 }
                 
                 // 서버에 체크인 확정 요청
                 String response = sendRequest("CONFIRM_CHECKIN|" + resId + "|" + roomNum);
                 view.showMessage(response);
+                
+                if (response.startsWith("SUCCESS") && onSuccessCallback != null) {
+                    onSuccessCallback.run();
+                }
             }
         });
     }
