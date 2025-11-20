@@ -18,7 +18,6 @@ public class CheckInController {
     private CheckInView view;
     private final String SERVER_IP = "127.0.0.1";
     private final int SERVER_PORT = 9999;
-    
     private Runnable onSuccessCallback;
 
     public CheckInController() {

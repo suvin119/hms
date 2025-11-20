@@ -7,6 +7,8 @@ package main;
 
 import checkIn.CheckInController;
 import checkIn.CheckInView;
+import reservation.ReservationController;
+import reservation.ReservationView;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -32,12 +34,35 @@ public class Main extends JFrame {
         // 체크인 화면 (컨트롤러랑 연결)
         CheckInController checkInCtrl = new CheckInController(); 
         CheckInView checkInView = checkInCtrl.getView(); 
+        
+        // 예약 화면
+        ReservationController reservationCtrl = new ReservationController();
+        ReservationView reservationview = reservationCtrl.getView();
 
         // 3. 카드 레이아웃에 화면 등록 
         mainContainer.add(mainMenuView, "MAIN");     // "MAIN" 이름표
+        mainContainer.add(reservationview, "RESERVATION");
         mainContainer.add(checkInView, "CHECK_IN");  // "CHECK_IN" 이름표
 
         // 4. 메인 메뉴의 버튼 동작 정의
+        // 메인 -> 예약
+        mainMenuView.setReservationListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainContainer, "RESERVATION"); // RESERVATION으로 이동
+            }
+        });
+        
+        // 예약 확정 시 -> 메인으로 이동하도록 콜백 연결
+        reservationCtrl.setOnSuccess(() -> {
+            cardLayout.show(mainContainer, "MAIN");
+        });
+        
+        // 예약 화면에서 뒤로가기 시 -> 메인 (뒤로가기 버튼 리스너 연결)
+        reservationview.addBackListener(e -> {
+            cardLayout.show(mainContainer, "MAIN");
+        });
+        
         // 메인 -> 체크인
         mainMenuView.setCheckInListener(new ActionListener() {
             @Override
@@ -50,6 +75,8 @@ public class Main extends JFrame {
         checkInCtrl.setOnSuccess(() -> {
             cardLayout.show(mainContainer, "MAIN"); // 메인 화면으로 전환
         });
+        
+        
         
         add(mainContainer);
         setVisible(true);
