@@ -1,54 +1,77 @@
 package checkOut;
 
-import UnitServices.ServiceDAO;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 public class CheckOutController {
     private CheckOutView view;
-    private ServiceDAO dao;
+    private List<Room> rooms;
+    private Room currentRoom;
 
-    public CheckOutController(CheckOutView view, ServiceDAO dao) {
+    public CheckOutController(CheckOutView view) {
         this.view = view;
-        this.dao = dao;
-        initController();
+        this.rooms = Room.loadRooms();
+
+        view.setSearchListener(new SearchListener());
+        view.setCalculateListener(new CalculateListener());
+        view.setCheckOutListener(new CheckOutListener());
+        view.setBackListener(e -> view.goBackToMain());
     }
 
-    private void initController() {
-        view.btnCalculate.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) { calculateCheckOut(); }
-        });
-    }
+    class SearchListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String roomNum = view.getRoomNumber();
+            if (roomNum.isEmpty()) { view.showMessage("객실 번호를 입력하세요."); return; }
 
-    private void calculateCheckOut() {
-        String reservationIdStr = view.tfReservationId.getText().trim();
-        String roomNumber = view.tfRoomNumber.getText().trim();
-        String checkOutDate = view.tfCheckOutDate.getText().trim();
+            currentRoom = rooms.stream()
+                    .filter(r -> r.getRoomNumber().equals(roomNum))
+                    .findFirst()
+                    .orElse(null);
 
-        if (reservationIdStr.isEmpty() || roomNumber.isEmpty() || checkOutDate.isEmpty()) {
-            view.taInfo.setText("예약ID, 객실번호, 체크아웃 날짜를 모두 입력하세요.");
-            return;
+            if (currentRoom == null) {
+                view.showMessage("해당 객실 정보가 없습니다.");
+                view.clearFields();
+                return;
+            }
+
+            view.setInfoText(
+                    "객실번호: " + currentRoom.getRoomNumber() + "\n" +
+                    "타입: " + currentRoom.getType() + "\n" +
+                    "가격: " + currentRoom.getPrice() + "\n" +
+                    "상태: " + currentRoom.getStatus()
+            );
         }
+    }
 
-        try {
-            int reservationId = Integer.parseInt(reservationIdStr);
-            int serviceCost = dao.getTotalServiceCost(reservationId);
+    class CalculateListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (currentRoom == null) { view.showMessage("먼저 객실을 조회하세요."); return; }
 
-            int stayCost = 50000;
-            int extraFee = 0;
-            int total = stayCost + serviceCost + extraFee;
+            // 테스트용 부대 서비스
+            StringBuilder sb = new StringBuilder("【부대서비스 요금 내역】\n");
+            int total = 0;
 
-            StringBuilder sb = new StringBuilder();
-            sb.append("체크아웃 요금 계산 결과:\n");
-            sb.append("숙박료: ").append(stayCost).append("원\n");
-            sb.append("부대서비스: ").append(serviceCost).append("원\n");
-            sb.append("추가 요금: ").append(extraFee).append("원\n");
-            sb.append("총 결제 금액: ").append(total).append("원");
+            sb.append("룸서비스 - 15000원\n");
+            sb.append("세탁서비스 - 8000원\n");
+            total = 15000 + 8000;
 
-            view.taInfo.setText(sb.toString());
+            sb.append("\n총 부대서비스 요금: ").append(total).append("원");
+            view.setInfoText(view.taInfo.getText() + "\n\n" + sb.toString());
+        }
+    }
 
-        } catch (NumberFormatException ex) {
-            view.taInfo.setText("예약ID는 숫자로 입력해야 합니다.");
+    class CheckOutListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (currentRoom == null) { view.showMessage("먼저 객실을 조회하세요."); return; }
+
+            currentRoom.setStatus("빈객실");
+            view.showMessage("체크아웃 완료! 객실이 비었습니다.");
+            view.clearFields();
+            currentRoom = null;
         }
     }
 }

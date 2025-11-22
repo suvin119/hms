@@ -2,24 +2,61 @@ package checkOut;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
-public class CheckOutView extends JPanel {
-    public JTextField tfReservationId = new JTextField(10);
-    public JTextField tfRoomNumber = new JTextField(5);
-    public JTextField tfCheckOutDate = new JTextField(10);
-    public JButton btnCalculate = new JButton("체크아웃 요금 계산");
-    public JTextArea taInfo = new JTextArea(10, 30);
+public class CheckOutView extends JFrame {
+    private JTextField tfRoomNumber = new JTextField(10);
+    JTextArea taInfo = new JTextArea(10, 30);
+
+    private JButton btnSearch = new JButton("객실 조회");
+    private JButton btnCalculate = new JButton("요금 계산");
+    private JButton btnCheckOut = new JButton("체크아웃");
+    private JButton btnBack = new JButton("돌아가기");
 
     public CheckOutView() {
+        setTitle("체크아웃");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
-        JPanel top = new JPanel();
-        top.add(new JLabel("예약ID:")); top.add(tfReservationId);
-        top.add(new JLabel("객실:")); top.add(tfRoomNumber);
-        top.add(new JLabel("실제 체크아웃 날짜:")); top.add(tfCheckOutDate);
-        top.add(btnCalculate);
-        add(top, BorderLayout.NORTH);
 
+        // 상단 입력 패널
+        JPanel topPanel = new JPanel();
+        topPanel.add(new JLabel("객실 번호: "));
+        topPanel.add(tfRoomNumber);
+        topPanel.add(btnSearch);
+        add(topPanel, BorderLayout.NORTH);
+
+        // 중앙 정보창
         taInfo.setEditable(false);
         add(new JScrollPane(taInfo), BorderLayout.CENTER);
+
+        // 하단 버튼
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.add(btnCalculate);
+        bottomPanel.add(btnCheckOut);
+        bottomPanel.add(btnBack);
+        add(bottomPanel, BorderLayout.SOUTH);
+
+        pack();
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    // Getter
+    public String getRoomNumber() { return tfRoomNumber.getText().trim(); }
+
+    // Setter
+    public void setInfoText(String text) { taInfo.setText(text); }
+    public void clearFields() { tfRoomNumber.setText(""); taInfo.setText(""); }
+    public void showMessage(String msg) { JOptionPane.showMessageDialog(this, msg); }
+
+    // Listener 등록
+    public void setSearchListener(ActionListener l) { btnSearch.addActionListener(l); }
+    public void setCalculateListener(ActionListener l) { btnCalculate.addActionListener(l); }
+    public void setCheckOutListener(ActionListener l) { btnCheckOut.addActionListener(l); }
+    public void setBackListener(ActionListener l) { btnBack.addActionListener(l); }
+
+    public void goBackToMain() {
+        dispose();
+        // new MainMenuFrame(); // 필요 시 메인 화면 연결
     }
 }
