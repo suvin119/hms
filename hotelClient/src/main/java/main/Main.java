@@ -1,13 +1,15 @@
 package main;
 
 /**
- *
+ * 호텔 관리 시스템 메인 클래스
  * @author subin
  */
 
 import checkIn.CheckInController;
-
+//import checkOut.CheckOutController;
+//import checkOut.CheckOutView;
 import reservation.ReservationController;
+//import UnitServices.ServiceDAO; 
 import javax.swing.*;
 import java.awt.*;
 
@@ -28,72 +30,49 @@ public class Main extends JFrame {
         MainMenuController mainMenuCtrl = new MainMenuController();
         ReservationController reservationCtrl = new ReservationController();
         CheckInController checkInCtrl = new CheckInController(); 
+        //체크아웃추가
         AdminMenuController adminCtrl = new AdminMenuController();
+        
+        // [메인 메뉴] -> 각 화면으로 이동
+        mainMenuCtrl.setOnNavigateToReservation(() -> cardLayout.show(mainContainer, "RESERVATION"));
+        mainMenuCtrl.setOnNavigateToCheckIn(() -> cardLayout.show(mainContainer, "CHECK_IN"));
+        mainMenuCtrl.setOnNavigateToCheckOut(() -> cardLayout.show(mainContainer, "CHECK_OUT"));
+        mainMenuCtrl.setOnNavigateToAdmin(() -> cardLayout.show(mainContainer, "ADMIN_MENU"));
 
-        
-        // [메인 메뉴 -> 예약 화면]
-        mainMenuCtrl.setOnNavigateToReservation(() -> {
-            cardLayout.show(mainContainer, "RESERVATION");
-        });
+        // [예약 화면]
+        reservationCtrl.setOnSuccess(() -> cardLayout.show(mainContainer, "MAIN")); // 예약 성공 시 메인
+        reservationCtrl.getView().addBackListener(e -> cardLayout.show(mainContainer, "MAIN")); // 뒤로가기
 
-        // [메인 메뉴 -> 체크인 화면]
-        mainMenuCtrl.setOnNavigateToCheckIn(() -> {
-            cardLayout.show(mainContainer, "CHECK_IN");
-        });
+        // [체크인 화면]
+        checkInCtrl.setOnSuccess(() -> cardLayout.show(mainContainer, "MAIN")); // 체크인 성공 시 메인
+        checkInCtrl.getView().addBackListener(e -> cardLayout.show(mainContainer, "MAIN")); // 뒤로가기
         
-        // [메인 메뉴 -> 체크아웃 화면]
-        mainMenuCtrl.setOnNavigateToCheckOut(() -> {
-            cardLayout.show(mainContainer, "CHECK_OUT");
-        });
-        
-        // [메인 메뉴 -> 관리 메뉴 화면]
-        mainMenuCtrl.setOnNavigateToAdmin(() -> {
-            cardLayout.show(mainContainer, "ADMIN_MENU");
-        });
+        // [체크아웃 화면] 로직 (혹시 체크아웃 컨트롤러에 리스너 설정 메소드가 있다면 여기에 추가)
 
-        // [예약 완료 -> 메인 화면]
-        reservationCtrl.setOnSuccess(() -> {
-            cardLayout.show(mainContainer, "MAIN");
-        });
-        
-        // [예약 화면에서 뒤로가기 -> 메인 화면]
-        reservationCtrl.getView().addBackListener(e -> {
-            cardLayout.show(mainContainer, "MAIN");
-        });
-        
-        // [체크인 완료 -> 메인 화면]
-        checkInCtrl.setOnSuccess(() -> {
-             cardLayout.show(mainContainer, "MAIN");
-        });
-        
-        // [체크인 화면 뒤로가기 -> 메인 화면]
-        checkInCtrl.getView().addBackListener(e -> {
-            cardLayout.show(mainContainer, "MAIN");
-        });
-        
-        // [관리 메뉴 -> 메인 메뉴]
-        adminCtrl.setOnBack(() -> {
-            cardLayout.show(mainContainer, "MAIN");
-        });
+        // [관리자 메뉴] 로직
+        adminCtrl.setOnBack(() -> cardLayout.show(mainContainer, "MAIN"));
 
-        
+
+        // 5. 메인 컨테이너에 화면 등록 ("이름표" 붙이기)
         mainContainer.add(mainMenuCtrl.getView(), "MAIN");
         mainContainer.add(reservationCtrl.getView(), "RESERVATION");
         mainContainer.add(checkInCtrl.getView(), "CHECK_IN");
+        //체크아웃
         mainContainer.add(adminCtrl.getView(), "ADMIN_MENU");
 
         
+        // 6. 화면 출력
         add(mainContainer);
         setVisible(true);
     }
 
     public static void main(String[] args) {
-    SwingUtilities.invokeLater(() -> {
-        try {
-            new Main();
-        } catch (Exception e) {
-            e.printStackTrace(); // 에러가 나면 콘솔에 출력
-        }
-    });
-}
+        SwingUtilities.invokeLater(() -> {
+            try {
+                new Main();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
 }
