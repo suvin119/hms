@@ -1,3 +1,4 @@
-101|Standard|80000|사용가능
+101|Standard|80000|투숙중
 102|Standard|80000|사용가능
 201|Deluxe|120000|사용가능
+103|STANDARD||사용가능

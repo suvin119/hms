@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class Room implements Serializable {
     
     public enum Type {
-        STANDARD("스탠다드"), DELUXE("디럭스"), SUITE("스위트");
+        스탠다드("스탠다드"), 디럭스("디럭스"), 스위트("스위트");
 
         private final String label;
         Type(String label) { this.label = label; }
@@ -18,7 +18,7 @@ public class Room implements Serializable {
     
     
     public enum Status {
-        AVAILABLE("사용가능"), RESERVED("예약중"), CLEANING("청소중"), OCCUPIED("투숙중");
+        사용가능("사용가능"), 예약중("예약중"), 청소중("청소중"), 투숙중("투숙중");
 
         private final String label;
         Status(String label) { this.label = label; }

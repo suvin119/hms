@@ -51,11 +51,11 @@ public class RoomAdminService {
         try {
             String roomNum = parts[1];
             for (String line : roomLines) {
-                if (line.startsWith(roomNum + ",")) {
+                if (line.startsWith(roomNum + "|")) {
                     return "FALSE|이미 존재하는 객실 번호입니다.";
                 }
             }
-            String newLine = String.format("%s,%s,%s,%s", parts[1], parts[2], parts[3], parts[4]);
+            String newLine = String.format("%s|%s|%s|%s", parts[1], parts[2], parts[3], parts[4]);
             roomLines.add(newLine);
             saveRoomsToFile();
             return "TRUE|객실 등록 성공";
@@ -69,9 +69,9 @@ public class RoomAdminService {
         String newPrice = parts[2];
         for (int i = 0; i < roomLines.size(); i++) {
             String line = roomLines.get(i);
-            String[] data = line.split(",");
+            String[] data = line.split("|");
             if (data[0].equals(targetRoomNum)) {
-                String updatedLine = String.format("%s,%s,%s,%s", data[0], data[1], newPrice, data[3]);
+                String updatedLine = String.format("%s|%s|%s|%s", data[0], data[1], newPrice, data[3]);
                 roomLines.set(i, updatedLine);
                 saveRoomsToFile();
                 return "TRUE|가격 수정 완료";
@@ -85,9 +85,9 @@ public class RoomAdminService {
         String newStatus = parts[2];
         for (int i = 0; i < roomLines.size(); i++) {
             String line = roomLines.get(i);
-            String[] data = line.split(",");
+            String[] data = line.split("|");
             if (data[0].equals(targetRoomNum)) {
-                String updatedLine = String.format("%s,%s,%s,%s", data[0], data[1], data[2], newStatus);
+                String updatedLine = String.format("%s|%s|%s|%s", data[0], data[1], data[2], newStatus);
                 roomLines.set(i, updatedLine);
                 saveRoomsToFile();
                 return "TRUE|상태 변경 완료";

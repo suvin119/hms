@@ -25,7 +25,7 @@ public class RoomAdminController {
         view.setStatusButtonListener(new StatusAction());
         view.setRefreshButtonListener(new RefreshAction());
 
-        refreshData();
+        //refreshData();
     }
 
     // 목록 가져오기
@@ -145,4 +145,5 @@ public class RoomAdminController {
             refreshData();
         }
     }
+    
 }

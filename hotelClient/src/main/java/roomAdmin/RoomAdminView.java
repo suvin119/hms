@@ -54,6 +54,7 @@ public class RoomAdminView extends JPanel {
         btnPanel.add(btnUpdatePrice);
         btnPanel.add(btnUpdateStatus);
         btnPanel.add(btnRefresh);
+        btnPanel.add(btnBack);
 
         topPanel.add(inputPanel, BorderLayout.CENTER);
         topPanel.add(btnPanel, BorderLayout.SOUTH);
