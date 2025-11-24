@@ -4,10 +4,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+<<<<<<< Updated upstream
 public class CheckOutView extends JPanel {
 
     private JTextField tfRoomNumber = new JTextField(10);
     private JTextArea taInfo = new JTextArea(10, 30);
+=======
+public class CheckOutView extends JFrame {
+    private JTextField tfRoomNumber = new JTextField(10);
+    JTextArea taInfo = new JTextArea(10, 30);
+>>>>>>> Stashed changes
 
     private JButton btnSearch = new JButton("객실 조회");
     private JButton btnCalculate = new JButton("요금 계산");
@@ -15,9 +21,16 @@ public class CheckOutView extends JPanel {
     private JButton btnBack = new JButton("돌아가기");
 
     public CheckOutView() {
+<<<<<<< Updated upstream
 
         setLayout(new BorderLayout());
 
+=======
+        setTitle("체크아웃");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+>>>>>>> Stashed changes
         // 상단 입력 패널
         JPanel topPanel = new JPanel();
         topPanel.add(new JLabel("객실 번호: "));
@@ -35,6 +48,7 @@ public class CheckOutView extends JPanel {
         bottomPanel.add(btnCheckOut);
         bottomPanel.add(btnBack);
         add(bottomPanel, BorderLayout.SOUTH);
+<<<<<<< Updated upstream
     }
 
     // Getter
@@ -71,5 +85,30 @@ public class CheckOutView extends JPanel {
 
     public void setBackListener(ActionListener l) {
         btnBack.addActionListener(l);
+=======
+
+        pack();
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    // Getter
+    public String getRoomNumber() { return tfRoomNumber.getText().trim(); }
+
+    // Setter
+    public void setInfoText(String text) { taInfo.setText(text); }
+    public void clearFields() { tfRoomNumber.setText(""); taInfo.setText(""); }
+    public void showMessage(String msg) { JOptionPane.showMessageDialog(this, msg); }
+
+    // Listener 등록
+    public void setSearchListener(ActionListener l) { btnSearch.addActionListener(l); }
+    public void setCalculateListener(ActionListener l) { btnCalculate.addActionListener(l); }
+    public void setCheckOutListener(ActionListener l) { btnCheckOut.addActionListener(l); }
+    public void setBackListener(ActionListener l) { btnBack.addActionListener(l); }
+
+    public void goBackToMain() {
+        dispose();
+        // new MainMenuFrame(); // 필요 시 메인 화면 연결
+>>>>>>> Stashed changes
     }
 }
