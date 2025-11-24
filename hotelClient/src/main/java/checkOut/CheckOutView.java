@@ -4,9 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-public class CheckOutView extends JFrame {
+public class CheckOutView extends JPanel {
+
     private JTextField tfRoomNumber = new JTextField(10);
-    JTextArea taInfo = new JTextArea(10, 30);
+    private JTextArea taInfo = new JTextArea(10, 30);
 
     private JButton btnSearch = new JButton("객실 조회");
     private JButton btnCalculate = new JButton("요금 계산");
@@ -14,8 +15,7 @@ public class CheckOutView extends JFrame {
     private JButton btnBack = new JButton("돌아가기");
 
     public CheckOutView() {
-        setTitle("체크아웃");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
         setLayout(new BorderLayout());
 
         // 상단 입력 패널
@@ -35,28 +35,41 @@ public class CheckOutView extends JFrame {
         bottomPanel.add(btnCheckOut);
         bottomPanel.add(btnBack);
         add(bottomPanel, BorderLayout.SOUTH);
-
-        pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
     }
 
     // Getter
-    public String getRoomNumber() { return tfRoomNumber.getText().trim(); }
+    public String getRoomNumber() {
+        return tfRoomNumber.getText().trim();
+    }
 
     // Setter
-    public void setInfoText(String text) { taInfo.setText(text); }
-    public void clearFields() { tfRoomNumber.setText(""); taInfo.setText(""); }
-    public void showMessage(String msg) { JOptionPane.showMessageDialog(this, msg); }
+    public void setInfoText(String text) {
+        taInfo.setText(text);
+    }
+
+    public void clearFields() {
+        tfRoomNumber.setText("");
+        taInfo.setText("");
+    }
+
+    public void showMessage(String msg) {
+        JOptionPane.showMessageDialog(this, msg);
+    }
 
     // Listener 등록
-    public void setSearchListener(ActionListener l) { btnSearch.addActionListener(l); }
-    public void setCalculateListener(ActionListener l) { btnCalculate.addActionListener(l); }
-    public void setCheckOutListener(ActionListener l) { btnCheckOut.addActionListener(l); }
-    public void setBackListener(ActionListener l) { btnBack.addActionListener(l); }
+    public void setSearchListener(ActionListener l) {
+        btnSearch.addActionListener(l);
+    }
 
-    public void goBackToMain() {
-        dispose();
-        // new MainMenuFrame(); // 필요 시 메인 화면 연결
+    public void setCalculateListener(ActionListener l) {
+        btnCalculate.addActionListener(l);
+    }
+
+    public void setCheckOutListener(ActionListener l) {
+        btnCheckOut.addActionListener(l);
+    }
+
+    public void setBackListener(ActionListener l) {
+        btnBack.addActionListener(l);
     }
 }

@@ -4,6 +4,11 @@ package main;
  * @author subin
  */
 
+
+
+import checkIn.CheckInController; // 체크인 임포트
+import checkOut.CheckOutView; //체크아웃
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JPanel;
@@ -48,9 +53,21 @@ public class MainMenuController {
         view.setCheckOutListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 if (onNavigateToCheckOut != null) {
                     onNavigateToCheckOut.run();
                 }
+
+                new CheckOutView(); 
+            }
+        });
+
+        // 객실 관리 버튼
+        view.setRoomManageListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                view.showMessage("객실 관리 기능은 개발 중입니다.");
+
                 
             }
         });

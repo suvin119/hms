@@ -32,7 +32,7 @@ public class Main extends JFrame {
         CheckInController checkInCtrl = new CheckInController(); 
         CheckOutView coView = new CheckOutView(); 
         UnitServices.ServiceDAO coService = new UnitServices.ServiceDAO(); 
-        CheckOutController checkOutCtrl = new CheckOutController(coView, coService);
+        CheckOutController checkOutCtrl = new CheckOutController(coView);
         AdminMenuController adminCtrl = new AdminMenuController();
 
         
