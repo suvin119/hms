@@ -14,6 +14,8 @@ public class AdminMenuController {
     
     private AdminMenuView view;
     private Runnable onBack;
+    
+    private Runnable onNavigateToRoomAdmin;
 
     public AdminMenuController() {
         this.view = new AdminMenuView();
@@ -22,8 +24,17 @@ public class AdminMenuController {
 
     private void initListeners() {
         ActionListener commonListener = e -> view.showMessage("해당 관리 기능은 개발 중입니다.");
-
-        view.setRoomListener(commonListener);
+        
+        //객실관리 버튼
+        view.setRoomAdminListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (onNavigateToRoomAdmin != null) {
+                    onNavigateToRoomAdmin.run();
+                }
+            }
+        });
+        
         view.setCustomerListener(commonListener);
         view.setReportListener(commonListener);
         view.setUserListener(e -> {
@@ -40,4 +51,5 @@ public class AdminMenuController {
 
     public JPanel getView() { return view; }
     public void setOnBack(Runnable onBack) { this.onBack = onBack; }
+    public void setOnNavigateToRoomAdmin(Runnable action) { this.onNavigateToRoomAdmin = action; }
 }

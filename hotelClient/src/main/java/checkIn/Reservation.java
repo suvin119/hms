@@ -10,20 +10,18 @@ public class Reservation {
     private String phoneNumber;
     private String checkInDate;
     private String checkOutDate;
-    private String roomType;
     private String numGuests;
     private String status;
     private String roomNumber;
 
-    public Reservation(String reservationId, String customerName, String phoneNumber, 
-                       String checkInDate, String checkOutDate, String roomType,
-                       String numGuests, String status, String roomNumber) {
+    public Reservation(String reservationId, String customerName, String phoneNumber, String checkInDate,
+                        String checkOutDate, String numGuests, String status, String roomNumber) {
         this.reservationId = reservationId;
         this.customerName = customerName;
         this.phoneNumber = phoneNumber;
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
-        this.roomType = roomType;
+        //this.roomType = roomType;
         this.numGuests = numGuests;
         this.status = status;
         this.roomNumber = roomNumber;
@@ -31,7 +29,6 @@ public class Reservation {
 
     // Getter
     public String getCustomerName() { return customerName; }
-    public String getRoomType() { return roomType; }
     public String getPeriod() { return checkInDate + " ~ " + checkOutDate; }
     public String getNumGuest() { return numGuests; }
     public String getPhoneNumber() { return phoneNumber; }

@@ -51,7 +51,7 @@ public class CheckInController {
                     String[] p = response.split("\\|");
                     
                     // Model 객체 생성 - 서버에서 받은 문자열 데이터 자바 데이터로 변경
-                    Reservation res = new Reservation(p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9]);
+                    Reservation res = new Reservation(p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
                     
                     // view 업데이트
                     view.setReservationInfo(res);

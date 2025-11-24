@@ -39,7 +39,8 @@ public class ServerMain {
             System.out.println("[Server] 수신된 요청: " + request);
 
             // 서비스 로직 연결
-            CheckInService service = new CheckInService(); 
+            CheckInService service = new CheckInService();
+            RoomAdminService roomService = new RoomAdminService();
             String response = "ERROR|잘못된 요청";
 
             if (request != null) {
@@ -48,8 +49,12 @@ public class ServerMain {
 
                 if (command.equals("FIND_RESERVATION")) {
                     response = service.findReservation(parts[1]);
-                } else if (command.equals("CONFIRM_CHECKIN")) {
+                }
+                else if (command.equals("CONFIRM_CHECKIN")) {
                     response = service.confirmCheckIn(parts[1], parts[2]);
+                }
+                else if (command.startsWith("ROOM_")) {
+                    response = roomService.processRequest(command, parts);
                 }
             }
 

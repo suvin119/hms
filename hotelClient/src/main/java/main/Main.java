@@ -10,6 +10,8 @@ import checkIn.CheckInController;
 //import checkOut.CheckOutView;
 import reservation.ReservationController;
 //import UnitServices.ServiceDAO; 
+import roomAdmin.RoomAdminController;
+import roomAdmin.RoomAdminView;
 import javax.swing.*;
 import java.awt.*;
 
@@ -33,6 +35,9 @@ public class Main extends JFrame {
         //체크아웃추가
         AdminMenuController adminCtrl = new AdminMenuController();
         
+        RoomAdminView roomView = new RoomAdminView();
+        RoomAdminController roomCtrl = new RoomAdminController(roomView);
+        
         // [메인 메뉴] -> 각 화면으로 이동
         mainMenuCtrl.setOnNavigateToReservation(() -> cardLayout.show(mainContainer, "RESERVATION"));
         mainMenuCtrl.setOnNavigateToCheckIn(() -> cardLayout.show(mainContainer, "CHECK_IN"));
@@ -51,6 +56,9 @@ public class Main extends JFrame {
 
         // [관리자 메뉴] 로직
         adminCtrl.setOnBack(() -> cardLayout.show(mainContainer, "MAIN"));
+        
+        // [관리자 메뉴] -> 객실 관리 화면으로
+        adminCtrl.setOnNavigateToRoomAdmin(() -> cardLayout.show(mainContainer, "ROOM_ADMIN"));
 
 
         // 5. 메인 컨테이너에 화면 등록 ("이름표" 붙이기)
@@ -60,6 +68,7 @@ public class Main extends JFrame {
         //체크아웃
         mainContainer.add(adminCtrl.getView(), "ADMIN_MENU");
 
+        mainContainer.add(roomView, "ROOM_ADMIN");
         
         // 6. 화면 출력
         add(mainContainer);

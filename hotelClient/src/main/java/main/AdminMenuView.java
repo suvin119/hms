@@ -54,7 +54,7 @@ public class AdminMenuView extends JPanel {
     }
 
     // 리스너 등록 메서드들
-    public void setRoomListener(ActionListener l) { btnRoom.addActionListener(l); }
+    public void setRoomAdminListener(ActionListener l) { btnRoom.addActionListener(l); }
     public void setCustomerListener(ActionListener l) { btnCustomer.addActionListener(l); }
     public void setReportListener(ActionListener l) { btnReport.addActionListener(l); }
     public void setUserListener(ActionListener l) { btnUser.addActionListener(l); }
