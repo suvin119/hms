@@ -25,6 +25,7 @@ public class ReservationController {
     public void setOnSuccess(Runnable callback) { this.onSuccessCallback = callback; }
 
     private void initListeners() {
+        
         // 예약 확정
         view.addRegisterListener(new ActionListener() {
             @Override
@@ -58,7 +59,7 @@ public class ReservationController {
         
     }
     
-    // 서버 통신 메소드 (CheckInController와 동일한 방식 사용)
+    // 서버 통신 메소드
     private String sendRequest(String msg) {
         try (Socket socket = new Socket(SERVER_IP, SERVER_PORT);
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true);

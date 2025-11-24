@@ -6,9 +6,7 @@ package main;
  */
 
 import checkIn.CheckInController;
-import checkOut.CheckOutController;
-import checkOut.CheckOutView;
-import UnitServices.ServiceDAO;
+
 import reservation.ReservationController;
 import javax.swing.*;
 import java.awt.*;
@@ -30,9 +28,6 @@ public class Main extends JFrame {
         MainMenuController mainMenuCtrl = new MainMenuController();
         ReservationController reservationCtrl = new ReservationController();
         CheckInController checkInCtrl = new CheckInController(); 
-        CheckOutView coView = new CheckOutView(); 
-        UnitServices.ServiceDAO coService = new UnitServices.ServiceDAO(); 
-        CheckOutController checkOutCtrl = new CheckOutController(coView);
         AdminMenuController adminCtrl = new AdminMenuController();
 
         
@@ -71,6 +66,11 @@ public class Main extends JFrame {
              cardLayout.show(mainContainer, "MAIN");
         });
         
+        // [체크인 화면 뒤로가기 -> 메인 화면]
+        checkInCtrl.getView().addBackListener(e -> {
+            cardLayout.show(mainContainer, "MAIN");
+        });
+        
         // [관리 메뉴 -> 메인 메뉴]
         adminCtrl.setOnBack(() -> {
             cardLayout.show(mainContainer, "MAIN");
@@ -80,7 +80,6 @@ public class Main extends JFrame {
         mainContainer.add(mainMenuCtrl.getView(), "MAIN");
         mainContainer.add(reservationCtrl.getView(), "RESERVATION");
         mainContainer.add(checkInCtrl.getView(), "CHECK_IN");
-        mainContainer.add(coView, "CHECK_OUT");
         mainContainer.add(adminCtrl.getView(), "ADMIN_MENU");
 
         
@@ -89,6 +88,12 @@ public class Main extends JFrame {
     }
 
     public static void main(String[] args) {
-        new Main();
-    }
+    SwingUtilities.invokeLater(() -> {
+        try {
+            new Main();
+        } catch (Exception e) {
+            e.printStackTrace(); // 에러가 나면 콘솔에 출력
+        }
+    });
+}
 }
