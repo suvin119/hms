@@ -53,7 +53,7 @@ public class MainMenuView extends JPanel {
     public void setReservationListener(ActionListener l) { btnReservation.addActionListener(l); }
     public void setCheckInListener(ActionListener l) { btnCheckIn.addActionListener(l); }
     public void setCheckOutListener(ActionListener l) { btnCheckOut.addActionListener(l); }
-    public void setRoomManageListener(ActionListener l) { btnRoomManage.addActionListener(l); }
+    public void setAdminButtonListener(ActionListener l) { btnRoomManage.addActionListener(l); }
     
     public void showMessage(String msg) {
         JOptionPane.showMessageDialog(this, msg);

@@ -24,6 +24,7 @@ public class CheckInView extends JPanel {
     private JTextField tfCheckOutDate = new JTextField(10);
     private JTextField tfRoomNumber = new JTextField(5);
     private JButton btnCheckIn = new JButton("체크인 확정");
+    private JButton btnBack = new JButton("뒤로 가기");
 
 
     public CheckInView() {
@@ -61,6 +62,7 @@ public class CheckInView extends JPanel {
         pnlBottom.add(pnlRow2);
 
         JPanel pnlRow3 = new JPanel(new FlowLayout());
+        pnlRow3.add(btnBack); 
         pnlRow3.add(btnCheckIn);
         pnlBottom.add(pnlRow3);
 
@@ -90,6 +92,7 @@ public class CheckInView extends JPanel {
     // 리스너 등록
     public void addSearchListener(ActionListener l) { btnSearch.addActionListener(l); }
     public void addCheckInListener(ActionListener l) { btnCheckIn.addActionListener(l); }
+    public void addBackListener(ActionListener l) { btnBack.addActionListener(l); }
 
     public void showMessage(String msg) { JOptionPane.showMessageDialog(this, msg); }
 }

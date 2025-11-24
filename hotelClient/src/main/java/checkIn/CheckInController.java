@@ -84,6 +84,7 @@ public class CheckInController {
                 }
             }
         });
+        
     }
 
     // 서버 통신 메소드
