@@ -5,10 +5,16 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 public class CheckOutView extends JPanel {
 
     private JTextField tfRoomNumber = new JTextField(10);
     private JTextArea taInfo = new JTextArea(10, 30);
+=======
+public class CheckOutView extends JFrame {
+    private JTextField tfRoomNumber = new JTextField(10);
+    JTextArea taInfo = new JTextArea(10, 30);
+>>>>>>> Stashed changes
 =======
 public class CheckOutView extends JFrame {
     private JTextField tfRoomNumber = new JTextField(10);
@@ -22,9 +28,16 @@ public class CheckOutView extends JFrame {
 
     public CheckOutView() {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
         setLayout(new BorderLayout());
 
+=======
+        setTitle("체크아웃");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+>>>>>>> Stashed changes
 =======
         setTitle("체크아웃");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -48,6 +61,7 @@ public class CheckOutView extends JFrame {
         bottomPanel.add(btnCheckOut);
         bottomPanel.add(btnBack);
         add(bottomPanel, BorderLayout.SOUTH);
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
     }
 
@@ -86,6 +100,8 @@ public class CheckOutView extends JFrame {
     public void setBackListener(ActionListener l) {
         btnBack.addActionListener(l);
 =======
+=======
+>>>>>>> Stashed changes
 
         pack();
         setLocationRelativeTo(null);
@@ -109,6 +125,9 @@ public class CheckOutView extends JFrame {
     public void goBackToMain() {
         dispose();
         // new MainMenuFrame(); // 필요 시 메인 화면 연결
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
 }

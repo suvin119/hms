@@ -1,4 +1,5 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 package checkOut;
 
 import java.io.BufferedReader;
@@ -96,6 +97,8 @@ public class Room {
     }
 }
 =======
+=======
+>>>>>>> Stashed changes
 package checkOut;
 
 import java.io.BufferedReader;
@@ -148,4 +151,7 @@ public class Room {
         return rooms;
     }
 }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
