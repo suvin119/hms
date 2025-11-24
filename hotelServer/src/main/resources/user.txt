@@ -1,3 +1,0 @@
-admin|1234|admin
-staff01|1111|staff
-staff02|2222|staff

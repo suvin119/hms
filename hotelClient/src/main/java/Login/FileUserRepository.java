@@ -2,6 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+/*
+ staff.txt 파일에서 계정을 읽고 등록/삭제하는 파일 기반 저장소 구현
+*/
 package Login;
 
 import java.io.*;
@@ -10,119 +13,33 @@ import java.util.List;
 
 public class FileUserRepository implements UserRepository {
 
-    // 파일경로
-    private static final String FILE_PATH = "user.txt";   // id|pw|role
+    // staff.txt 포맷: id|pw|role
+    private static final String FILE_PATH = "staff.txt";
 
-    // ID로 찾기
-    @Override
-    public User findById(String id) {
-        try (BufferedReader br = new BufferedReader(new FileReader(FILE_PATH))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split("\\|");
-                if (data.length < 3) continue;
-                if (data[0].equals(id)) {
-                    return new User(data[0], data[1], data[2]);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            return null;
-        } catch (IOException e) {
-            e.printStackTrace();
+    // ---------- 유틸 ----------
+
+    private List<String> loadAllLines() {
+        List<String> result = new ArrayList<>();
+        File f = new File(FILE_PATH);
+
+        // 파일 없으면 빈 리스트 반환
+        if (!f.exists()) {
+            return result;
         }
-        return null;
-    }
 
-    // 전체 조회
-    public List<User> findAll() {
-        List<User> list = new ArrayList<>();
-        File file = new File(FILE_PATH);
-        if (!file.exists()) return list;
-
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] data = line.split("\\|");
-                if (data.length < 3) continue;
-                list.add(new User(data[0], data[1], data[2]));
+                if (!line.trim().isEmpty()) {
+                    result.add(line.trim());
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return list;
+        return result;
     }
 
-    // 추가
-    public boolean addUser(String id, String pw, String role) {
-        if (findById(id) != null) return false;
-
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_PATH, true))) {
-            String newLine = id + "|" + pw + "|" + role;
-            bw.write(newLine);
-            bw.newLine();
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    // 삭제
-    public boolean deleteUser(String targetId) {
-        List<String> lines = new ArrayList<>();
-        boolean found = false;
-
-        try (BufferedReader br = new BufferedReader(new FileReader(FILE_PATH))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split("\\|");
-                if (data.length > 0 && data[0].equals(targetId)) {
-                    found = true;
-                } else {
-                    lines.add(line);
-                }
-            }
-        } catch (IOException e) {
-            return false;
-        }
-
-        if (found) {
-            saveAllLines(lines);
-            return true;
-        }
-        return false;
-    }
-
-    // 수정
-    public boolean updateUser(String id, String newPw, String newRole) {
-        List<String> lines = new ArrayList<>();
-        boolean found = false;
-
-        try (BufferedReader br = new BufferedReader(new FileReader(FILE_PATH))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split("\\|");
-
-                if (data.length > 0 && data[0].equals(id)) {
-                    String newLine = id + "|" + newPw + "|" + newRole;
-                    lines.add(newLine);
-                    found = true;
-                } else {
-                    lines.add(line);
-                }
-            }
-        } catch (IOException e) {
-            return false;
-        }
-
-        if (found) {
-            saveAllLines(lines);
-            return true;
-        }
-        return false;
-    }
-
-    // 전체 저장
     private void saveAllLines(List<String> lines) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_PATH))) {
             for (String line : lines) {
@@ -133,4 +50,63 @@ public class FileUserRepository implements UserRepository {
             e.printStackTrace();
         }
     }
+
+    // id|pw|role → User 객체로 변환
+    private User parseUser(String line) {
+        String[] parts = line.split("\\|");
+        if (parts.length < 3) return null;
+
+        String id = parts[0];
+        String pw = parts[1];
+        String role = parts[2];
+
+        return new User(id, pw, role);
+    }
+
+    // User → 파일 한 줄 문자열
+    private String toLine(User u) {
+        return u.getId() + "|" + u.getPassword() + "|" + u.getRole();
+    }
+
+    // ---------- 구현 ----------
+
+    @Override
+    public User findById(String id) {
+        for (String line : loadAllLines()) {
+            User u = parseUser(line);
+            if (u != null && u.getId().equals(id)) {
+                return u;
+            }
+        }
+        return null;
+    }
+    
+    //등록
+    @Override
+    public boolean addUser(String id, String password, String role) {
+        // 이미 존재하면 실패
+        if (findById(id) != null) return false;
+
+        List<String> lines = loadAllLines();
+        User u = new User(id, password, role);
+        lines.add(toLine(u));
+        saveAllLines(lines);
+        return true;
+    }
+    
+    //삭제
+    @Override
+    public boolean deleteUser(String id) {
+        List<String> lines = loadAllLines();
+        boolean removed = lines.removeIf(line -> {
+            User u = parseUser(line);
+            return u != null && u.getId().equals(id);
+        });
+
+        if (removed) {
+            saveAllLines(lines);
+        }
+        return removed;
+    }
 }
+
