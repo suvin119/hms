@@ -24,7 +24,7 @@ public class CheckInView extends JPanel {
     private JTextField tfCheckOutDate = new JTextField(10);
     private JTextField tfRoomNumber = new JTextField(5);
     private JButton btnCheckIn = new JButton("체크인 확정");
-    private JButton btnBack = new JButton("뒤로 가기");
+    private JButton btnBack = new JButton("뒤로가기");
 
 
     public CheckInView() {
