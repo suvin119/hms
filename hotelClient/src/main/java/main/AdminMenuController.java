@@ -5,6 +5,7 @@ package main;
  * @author subin
  */
 
+import Login.UserManageController;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JPanel;
@@ -25,7 +26,11 @@ public class AdminMenuController {
         view.setRoomListener(commonListener);
         view.setCustomerListener(commonListener);
         view.setReportListener(commonListener);
-        view.setUserListener(commonListener);
+        view.setUserListener(e -> {
+         UserManageController ctrl = new UserManageController(null); // owner 없음
+         ctrl.show();
+        });   
+        
         view.setServiceListener(commonListener);
 
         view.setBackListener(e -> {
