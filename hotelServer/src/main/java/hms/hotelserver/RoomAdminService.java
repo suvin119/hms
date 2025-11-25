@@ -69,7 +69,7 @@ public class RoomAdminService {
         String newPrice = parts[2];
         for (int i = 0; i < roomLines.size(); i++) {
             String line = roomLines.get(i);
-            String[] data = line.split("|");
+            String[] data = line.split("\\|");
             if (data[0].equals(targetRoomNum)) {
                 String updatedLine = String.format("%s|%s|%s|%s", data[0], data[1], newPrice, data[3]);
                 roomLines.set(i, updatedLine);
@@ -85,7 +85,7 @@ public class RoomAdminService {
         String newStatus = parts[2];
         for (int i = 0; i < roomLines.size(); i++) {
             String line = roomLines.get(i);
-            String[] data = line.split("|");
+            String[] data = line.split("\\|");
             if (data[0].equals(targetRoomNum)) {
                 String updatedLine = String.format("%s|%s|%s|%s", data[0], data[1], data[2], newStatus);
                 roomLines.set(i, updatedLine);

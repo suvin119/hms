@@ -21,7 +21,6 @@ public class Reservation {
         this.phoneNumber = phoneNumber;
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
-        //this.roomType = roomType;
         this.numGuests = numGuests;
         this.status = status;
         this.roomNumber = roomNumber;

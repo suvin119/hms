@@ -34,9 +34,7 @@ public class Main extends JFrame {
         CheckInController checkInCtrl = new CheckInController(); 
         //체크아웃추가
         AdminMenuController adminCtrl = new AdminMenuController();
-        
-        RoomAdminView roomView = new RoomAdminView();
-        RoomAdminController roomCtrl = new RoomAdminController(roomView);
+        RoomAdminController roomCtrl = new RoomAdminController();
         
         // [메인 메뉴] -> 각 화면으로 이동
         mainMenuCtrl.setOnNavigateToReservation(() -> cardLayout.show(mainContainer, "RESERVATION"));
@@ -54,21 +52,23 @@ public class Main extends JFrame {
         
         // [체크아웃 화면] 로직 (혹시 체크아웃 컨트롤러에 리스너 설정 메소드가 있다면 여기에 추가)
 
-        // [관리자 메뉴] 로직
+        // [관리자 메뉴]
         adminCtrl.setOnBack(() -> cardLayout.show(mainContainer, "MAIN"));
         
-        // [관리자 메뉴] -> 객실 관리 화면으로
+        // [관리자 메뉴] -> 객실 관리 화면
         adminCtrl.setOnNavigateToRoomAdmin(() -> cardLayout.show(mainContainer, "ROOM_ADMIN"));
+        roomCtrl.getView().addBackListener(e -> cardLayout.show(mainContainer, "ADMIN_MENU"));
 
 
-        // 5. 메인 컨테이너에 화면 등록 ("이름표" 붙이기)
+        // 5. 메인 컨테이너에 화면 등록
         mainContainer.add(mainMenuCtrl.getView(), "MAIN");
         mainContainer.add(reservationCtrl.getView(), "RESERVATION");
         mainContainer.add(checkInCtrl.getView(), "CHECK_IN");
         //체크아웃
         mainContainer.add(adminCtrl.getView(), "ADMIN_MENU");
-
-        mainContainer.add(roomView, "ROOM_ADMIN");
+        
+        // 관리
+        mainContainer.add(roomCtrl.getView(), "ROOM_ADMIN");
         
         // 6. 화면 출력
         add(mainContainer);

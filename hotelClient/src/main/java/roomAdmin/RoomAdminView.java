@@ -1,7 +1,6 @@
 package roomAdmin;
 
 /**
- *
  * @author subin
  */
 
@@ -72,25 +71,29 @@ public class RoomAdminView extends JPanel {
     public String getPriceStr() { return tfPrice.getText(); }
     public Room.Status getSelectedStatus() { return (Room.Status) cbStatus.getSelectedItem(); }
 
-    public void setAddButtonListener(ActionListener listener) { btnAdd.addActionListener(listener); }
-    public void setPriceButtonListener(ActionListener listener) { btnUpdatePrice.addActionListener(listener); }
-    public void setStatusButtonListener(ActionListener listener) { btnUpdateStatus.addActionListener(listener); }
-    public void setRefreshButtonListener(ActionListener listener) { btnRefresh.addActionListener(listener); }
+
+    public void addAddButtonListener(ActionListener l) { btnAdd.addActionListener(l); }
+    public void addPriceButtonListener(ActionListener l) { btnUpdatePrice.addActionListener(l); }
+    public void addStatusButtonListener(ActionListener l) { btnUpdateStatus.addActionListener(l); }
+    public void addRefreshButtonListener(ActionListener l) { btnRefresh.addActionListener(l); }
+    public void addBackListener(ActionListener l) { btnBack.addActionListener(l); }
+    
+    public void setRoomInfo(List<Room> rooms) {
+        tableModel.setRowCount(0);
+
+        for (Room r : rooms) {
+            tableModel.addRow(new Object[]{
+                r.getRoomNumber(),
+                r.getType(),
+                r.getPrice(),
+                r.getStatus().getLabel()
+            });
+        }
+    }
+
 
     public void showMessage(String msg) {
         JOptionPane.showMessageDialog(this, msg);
     }
 
-    public void updateTable(List<Room> roomList) {
-        tableModel.setRowCount(0);
-        for (Room r : roomList) {
-            Object[] row = {
-                r.getRoomNumber(), 
-                r.toString().split("\\|")[2].trim(),
-                (int)r.getPrice(), 
-                r.getStatus().getLabel()
-            };
-            tableModel.addRow(row);
-        }
-    }
 }
