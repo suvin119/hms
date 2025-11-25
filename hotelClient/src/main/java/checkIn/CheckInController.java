@@ -74,7 +74,9 @@ public class CheckInController {
                 }
                 
                 // 서버에 체크인 확정 요청
-                String response = sendRequest("CONFIRM_CHECKIN|" + resId + "|" + roomNum);
+                String msg = String.format("CONFIRM_CHECKIN|%s|%s|%s", resId, roomNum, newCheckOutDate);
+                
+                String response = sendRequest(msg);
                 view.showMessage(response);
                 
                 if (response.startsWith("SUCCESS") && onSuccessCallback != null) {
