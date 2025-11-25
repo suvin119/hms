@@ -30,16 +30,16 @@ public class CheckInController {
         this.onSuccessCallback = callback;
     }
     
-    // main 프레임에서 가져갈 수 있게 getter
     public CheckInView getView() { return view; }
 
     private void initListeners() {
-        // 조회 버튼(예약정보 가져오기)
+        
+        // 1. 예약 조회 버튼
         view.addSearchListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String id = view.getReservationId(); // view에서의 입력 값
-                if (id.isEmpty()) { // 유효성 검사
+                String id = view.getReservationId();
+                if (id.isEmpty()) {
                     view.showMessage("예약번호를 입력하세요.");
                     return;
                 }
@@ -52,8 +52,7 @@ public class CheckInController {
                     
                     // Model 객체 생성 - 서버에서 받은 문자열 데이터 자바 데이터로 변경
                     Reservation res = new Reservation(p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
-                    
-                    // view 업데이트
+
                     view.setReservationInfo(res);
                 } else {
                     view.showMessage("오류: " + response);
@@ -61,11 +60,10 @@ public class CheckInController {
             }
         });
 
-        // 체크인 버튼
+        // 2. 체크인 버튼
         view.addCheckInListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // view에서 객실번호, 예약번호 가져옴
                 String roomNum = view.getRoomNumber();
                 String resId = view.getReservationId();
                 String newCheckOutDate = view.getCheckOutDate();
@@ -89,7 +87,6 @@ public class CheckInController {
 
     // 서버 통신 메소드
     private String sendRequest(String msg) {
-        // 소켓과 입출력 스트림(PrintWriter, BufferedReader)은 사용 후 자동으로 close() 되어 메모리 누수를 방지함.
         try (Socket socket = new Socket(SERVER_IP, SERVER_PORT);
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true); // 전송용 스트림
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) { // 수신용 스트림
