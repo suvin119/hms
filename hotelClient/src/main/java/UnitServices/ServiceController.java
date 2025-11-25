@@ -1,56 +1,27 @@
 package UnitServices;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.*;
-import java.net.Socket;
+import Pay.BillingService; // Service Controller는 BillingService를 호출하여 부대 비용 추가 요청
 
+/**
+ * Controller: 부대 서비스(룸서비스, 미니바 등) 금액 추가 로직 조정
+ */
 public class ServiceController {
-    private ServiceView view;
-    private final String SERVER_IP = "127.0.0.1";
-    private final int SERVER_PORT = 9999;
+    
+    private BillingService server; 
 
-    public ServiceController(ServiceView view) {
-        this.view = view;
-        initController();
+    public ServiceController() {
+        // 실제로는 Server에 연결하는 통신 클라이언트 초기화
+        this.server = new BillingService(); 
     }
 
-    private void initController() {
-        view.btnAddService.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                addService();
-            }
-        });
-    }
-
-    private void addService() {
-        try {
-            String reservationId = view.tfReservationId.getText();
-            String serviceId = view.tfServiceId.getText();
-            String quantity = view.tfQuantity.getText();
-            int cost = Integer.parseInt(quantity) * 10000;
-
-            String msg = "ADD_SERVICE|" + reservationId + "|" + serviceId + "|" + quantity + "|" + cost;
-            String response = sendRequest(msg);
-
-            view.taInfo.append(response + "\n");
-        } catch (NumberFormatException ex) {
-            view.taInfo.append("숫자를 정확히 입력하세요.\n");
+    /**
+     * 부대 서비스 요금 추가 요청을 서버에 전달
+     */
+    public boolean addCharge(int roomId, String serviceName, double amount) {
+        if (amount <= 0) {
+            System.err.println("추가 금액은 0보다 커야 합니다.");
+            return false;
         }
-    }
-
-    private String sendRequest(String msg) {
-        try (Socket socket = new Socket(SERVER_IP, SERVER_PORT);
-             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-
-            out.println(msg);
-            return in.readLine();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "FAIL|서버 연결 실패";
-        }
+        return server.addServiceCharge(roomId, serviceName, amount);
     }
 }

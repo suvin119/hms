@@ -1,10 +1,5 @@
 package main;
 
-/**
- * 메인 메뉴 컨트롤러
- * @author subin
- */
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JPanel;
@@ -13,6 +8,7 @@ public class MainMenuController {
     
     private MainMenuView view;
     
+    // 화면 전환을 위한 콜백 인터페이스 정의
     private Runnable onNavigateToReservation;
     private Runnable onNavigateToCheckIn;
     private Runnable onNavigateToCheckOut;
@@ -22,20 +18,22 @@ public class MainMenuController {
         this.view = new MainMenuView();
         initListeners();
     }
-    
+
+    // 예약
     private void initListeners() {
         
-        // 1. 예약 버튼 리스너
+        // 예약 등록 버튼
         view.setReservationListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // new ReservatioController();
                 if (onNavigateToReservation != null) {
-                    onNavigateToReservation.run(); // Main.java로 화면 전환 요청
+                    onNavigateToReservation.run();
                 }
             }
         });
 
-        // 2. 체크인 버튼 리스너
+        // 체크인 버튼
         view.setCheckInListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -45,7 +43,7 @@ public class MainMenuController {
             }
         });
 
-        // 3. 체크아웃 버튼 리스너
+        // 체크아웃 버튼
         view.setCheckOutListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -54,12 +52,12 @@ public class MainMenuController {
                 }
             }
         });
-        
-        //5. 관리자 메뉴 버튼 리스너
-        view.setAdminButtonListener(new ActionListener() { 
+
+        // 관리 메뉴 (기존 객실 관리 버튼)
+        view.setRoomManageListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (Session.currentUser != null && Session.currentUser.isAdmin()) {
+                if (Session.currentUser.isAdmin()) {
                     if (onNavigateToAdmin != null) {
                         onNavigateToAdmin.run();
                     }
@@ -68,13 +66,10 @@ public class MainMenuController {
                 }
             }
         });
-  
     }
     
-    // 뷰 반환 (Main.java에서 사용)
     public JPanel getView() { return view; }
 
-    // Main.java에서 화면 전환 기능을 연결해주는 통로들
     public void setOnNavigateToReservation(Runnable action) { this.onNavigateToReservation = action; }
     public void setOnNavigateToCheckIn(Runnable action) { this.onNavigateToCheckIn = action; }
     public void setOnNavigateToCheckOut(Runnable action) { this.onNavigateToCheckOut = action; }
