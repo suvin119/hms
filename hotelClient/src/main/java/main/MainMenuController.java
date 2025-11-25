@@ -54,7 +54,7 @@ public class MainMenuController {
         });
 
         // 관리 메뉴 (기존 객실 관리 버튼)
-        view.setRoomManageListener(new ActionListener() {
+        view.setAdminButtonListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (Session.currentUser.isAdmin()) {
