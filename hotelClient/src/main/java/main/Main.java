@@ -6,19 +6,25 @@ package main;
  */
 
 import checkIn.CheckInController;
-//import checkOut.CheckOutController;
-//import checkOut.CheckOutView;
+import checkOut.CheckOutController;
+import checkOut.CheckOutView;
 import reservation.ReservationController;
-//import UnitServices.ServiceDAO; 
 import roomAdmin.RoomAdminController;
 import roomAdmin.RoomAdminView;
 import javax.swing.*;
 import java.awt.*;
+//---------------
+import roomAdmin.Room; // Room 객체 사용을 위해 추가
+import java.util.ArrayList; // 임시 Room 목록 생성을 위해 추가
+import java.util.List;
+//---------------
 
 public class Main extends JFrame {
     
     private CardLayout cardLayout;
     private JPanel mainContainer;
+    private CheckOutView checkOutView;
+    private CheckOutController checkOutCtrl;
 
     public Main() {
         setTitle("호텔 관리 시스템");
@@ -51,6 +57,8 @@ public class Main extends JFrame {
         checkInCtrl.getView().addBackListener(e -> cardLayout.show(mainContainer, "MAIN")); // 뒤로가기
         
         // [체크아웃 화면] 로직 (혹시 체크아웃 컨트롤러에 리스너 설정 메소드가 있다면 여기에 추가)
+        checkOutCtrl.setOnSuccess(() -> cardLayout.show(mainContainer, "MAIN")); // 체크인 성공 시 메인
+        checkOutCtrl.getView().addBackListener(e -> cardLayout.show(mainContainer, "MAIN")); // 뒤로가기
 
         // [관리자 메뉴]
         adminCtrl.setOnBack(() -> cardLayout.show(mainContainer, "MAIN"));
@@ -64,7 +72,7 @@ public class Main extends JFrame {
         mainContainer.add(mainMenuCtrl.getView(), "MAIN");
         mainContainer.add(reservationCtrl.getView(), "RESERVATION");
         mainContainer.add(checkInCtrl.getView(), "CHECK_IN");
-        //체크아웃
+        mainContainer.add(checkOutCtrl.getView(), "CHECK_OUT");//체크아웃
         mainContainer.add(adminCtrl.getView(), "ADMIN_MENU");
         
         // 관리
@@ -73,8 +81,21 @@ public class Main extends JFrame {
         // 6. 화면 출력
         add(mainContainer);
         setVisible(true);
+        
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
+    
+    /** CheckOutController 및 RoomAdminController 테스트를 위한 더미 Room 목록 생성 */
+    private List<Room> createDummyRooms() {
+        List<Room> rooms = new ArrayList<>();
+        // Room 클래스가 roomAdmin.Room에 있고, Status, Type enum이 정의되어 있다고 가정
+        rooms.add(new Room("101", Room.Type.STANDARD, 100000.0, Room.Status.OCCUPIED));
+        rooms.add(new Room("205", Room.Type.DELUXE, 150000.0, Room.Status.AVAILABLE));
+        return rooms;
+    }
+    
+    
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {

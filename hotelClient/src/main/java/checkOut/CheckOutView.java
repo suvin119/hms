@@ -1,167 +1,154 @@
 package checkOut;
 
-import Pay.BillingController;
 import Pay.BookingInfo;
 import Pay.ExtraChargeInfo;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.time.LocalDate;
+import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.Optional;
 
 /**
- * View: 체크아웃 UI 구현
+ * View: 체크아웃 UI 구현. 
+ * 모든 비즈니스 로직은 Controller(CheckOutController)에게 위임합니다.
+ * @author subin
  */
-public class CheckoutView extends JPanel {
+public class CheckOutView extends JPanel {
     
-    private BillingController controller;
+    // UI 요소 선언
     private JTextField roomField;
     private JLabel guestLabel, plannedDateLabel, totalBillLabel;
     private JTable extraChargeTable;
-    private JButton searchButton, checkoutButton;
+    private JButton searchButton, checkoutButton, backButton; // 💡 뒤로가기 버튼 추가
 
-    private int currentRoomId = -1;
-    private BookingInfo currentBooking;
-
-    public CheckoutView() {
-        this.controller = new BillingController(); 
-        setLayout(new BorderLayout(10, 10));
+    public CheckOutView() {
+        setLayout(new BorderLayout(15, 15));
         
-        // UI 구성 (생략된 부분은 이전 코드와 동일)
-        JPanel searchPanel = new JPanel(new FlowLayout());
-        roomField = new JTextField(5);
-        searchButton = new JButton("객실 정보 조회");
-        searchButton.addActionListener(e -> loadBookingDetails());
+        // ------------------ 1. 검색 패널 (NORTH) ------------------
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        roomField = new JTextField(8);
+        searchButton = new JButton("객실 정보 조회 (Search)");
+        
         searchPanel.add(new JLabel("방 번호:"));
         searchPanel.add(roomField);
         searchPanel.add(searchButton);
         add(searchPanel, BorderLayout.NORTH);
         
-        JPanel mainPanel = new JPanel(new GridLayout(2, 1));
+        // ------------------ 2. 메인 정보 패널 (CENTER) ------------------
+        JPanel mainPanel = new JPanel(new GridLayout(2, 1, 10, 10));
         
-        JPanel infoPanel = new JPanel(new GridLayout(3, 2));
+        // 2-1. 예약 정보 표시 패널
+        JPanel infoPanel = new JPanel(new GridLayout(2, 1, 5, 5));
+        infoPanel.setBorder(BorderFactory.createTitledBorder("예약 정보"));
         guestLabel = new JLabel("고객명: -");
         plannedDateLabel = new JLabel("예정 체크아웃: -");
         infoPanel.add(guestLabel);
         infoPanel.add(plannedDateLabel);
+        
         mainPanel.add(infoPanel);
 
-        String[] columnNames = {"서비스", "금액"};
+        // 2-2. 부대 서비스 테이블
+        String[] columnNames = {"서비스 항목", "금액 (원)"};
         extraChargeTable = new JTable(new DefaultTableModel(columnNames, 0));
-        mainPanel.add(new JScrollPane(extraChargeTable));
+        JScrollPane tableScrollPane = new JScrollPane(extraChargeTable);
+        tableScrollPane.setBorder(BorderFactory.createTitledBorder("부대 서비스 요금"));
+        
+        mainPanel.add(tableScrollPane);
         
         add(mainPanel, BorderLayout.CENTER);
         
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        totalBillLabel = new JLabel("최종 청구 금액: 0.0원", SwingConstants.RIGHT);
-        totalBillLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
-        checkoutButton = new JButton("체크아웃 및 결제 완료");
-        checkoutButton.setEnabled(false); 
-        checkoutButton.addActionListener(e -> processCheckout());
+        // ------------------ 3. 결제 및 버튼 패널 (SOUTH) ------------------
+        JPanel bottomPanel = new JPanel(new BorderLayout(0, 10));
+        
+        totalBillLabel = new JLabel("최종 청구 금액: 0원", SwingConstants.RIGHT);
+        totalBillLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+        totalBillLabel.setForeground(new Color(0, 100, 0)); // 진한 녹색
+        
+        checkoutButton = new JButton("결제 및 체크아웃 완료 (Checkout)");
+        checkoutButton.setEnabled(false);    // 조회 전에는 비활성화
+        
+        backButton = new JButton("뒤로가기 (Back)");
+        
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 0));
+        buttonPanel.add(backButton);
+        buttonPanel.add(checkoutButton);
 
         bottomPanel.add(totalBillLabel, BorderLayout.NORTH);
-        bottomPanel.add(checkoutButton, BorderLayout.SOUTH);
+        bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
         add(bottomPanel, BorderLayout.SOUTH);
     }
     
-    private void loadBookingDetails() {
-        try {
-            currentRoomId = Integer.parseInt(roomField.getText().trim());
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "유효한 방 번호를 입력하세요.", "오류", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+    // ----------------------------------------------------
+    // Controller 연결을 위한 공개 메서드 (Getter & Listener Setter)
+    // ----------------------------------------------------
 
-        Optional<BookingInfo> bookingOpt = controller.getBookingDetails(currentRoomId);
-
-        if (bookingOpt.isPresent()) {
-            currentBooking = bookingOpt.get();
-            
-            // 1. 고객 및 예약 정보 업데이트
-            guestLabel.setText("고객명: " + currentBooking.getGuestName());
-            plannedDateLabel.setText("예정 체크아웃: " + currentBooking.getPlannedCheckOutDate());
-            
-            // 2. 부대 서비스 JTable 업데이트
-            updateExtraChargeTable(currentBooking.getExtraCharges());
-
-            // 3. 최종 금액 계산 및 표시
-            calculateAndDisplayTotalBill(currentRoomId);
-            
-            checkoutButton.setEnabled(true);
-        } else {
-            JOptionPane.showMessageDialog(this, "해당 방의 예약 정보를 찾을 수 없습니다.", "정보 없음", JOptionPane.WARNING_MESSAGE);
-            checkoutButton.setEnabled(false);
-            resetView();
-        }
+    /** @return JTextField에 입력된 방 번호 문자열 */
+    public String getRoomNumber() {
+        return roomField.getText().trim();
     }
     
-    private void updateExtraChargeTable(List<ExtraChargeInfo> charges) {
+    /** Controller가 Search 버튼 클릭 이벤트를 처리할 수 있도록 리스너를 등록합니다. */
+    public void addSearchListener(ActionListener listener) {
+        searchButton.addActionListener(listener);
+    }
+
+    /** Controller가 Checkout 버튼 클릭 이벤트를 처리할 수 있도록 리스너를 등록합니다. */
+    public void addCheckoutListener(ActionListener listener) {
+        checkoutButton.addActionListener(listener);
+    }
+    
+    /** Controller가 Back 버튼 클릭 이벤트를 처리할 수 있도록 리스너를 등록합니다. */
+    public void addBackListener(ActionListener listener) {
+        backButton.addActionListener(listener);
+    }
+
+    // ----------------------------------------------------
+    // Controller가 UI 상태를 업데이트하기 위한 메서드
+    // ----------------------------------------------------
+
+    /** Controller가 조회된 예약 정보를 View에 표시 */
+    public void displayBookingInfo(BookingInfo booking) {
+        guestLabel.setText("고객명: " + booking.getGuestName());
+        plannedDateLabel.setText("예정 체크아웃: " + booking.getPlannedCheckOutDate());
+        
+        updateExtraChargeTable(booking.getExtraCharges());
+        checkoutButton.setEnabled(true);
+    }
+    
+    /** Controller가 부대 서비스 JTable을 업데이트 */
+    public void updateExtraChargeTable(List<ExtraChargeInfo> charges) {
         DefaultTableModel model = (DefaultTableModel) extraChargeTable.getModel();
         model.setRowCount(0);
         for (ExtraChargeInfo charge : charges) {
             model.addRow(new Object[]{
                 charge.getServiceName(),
-                String.format("%.2f", charge.getAmount())
+                String.format("%,.0f원", charge.getAmount()) // 금액 포맷 수정
             });
         }
     }
     
-    private void calculateAndDisplayTotalBill(int roomId) {
-        LocalDate actualCheckOutDate = LocalDate.now(); 
-        double totalBill = controller.calculateFinalBill(roomId, actualCheckOutDate);
-        
+    /** Controller가 최종 청구 금액을 표시 */
+    public void displayTotalBill(double totalBill) {
         if (totalBill >= 0) {
-            totalBillLabel.setText(String.format("최종 청구 금액: %.2f원", totalBill));
+            totalBillLabel.setText(String.format("최종 청구 금액: %,.0f원", totalBill)); // 금액 포맷 수정
         } else {
             totalBillLabel.setText("최종 청구 금액: 계산 오류");
         }
     }
-
-    private void processCheckout() {
-        if (currentRoomId == -1 || currentBooking == null) return;
-
-        // 테스트를 위해 예정일보다 하루 늦게 체크아웃 처리 (추가 요금 발생 유도)
-        LocalDate actualDate = currentBooking.getPlannedCheckOutDate().plusDays(1); 
-        
-        double finalBill = controller.calculateFinalBill(currentRoomId, actualDate);
-        
-        String message = String.format("총 금액 %.2f원을 결제하고 체크아웃 하시겠습니까?\n(실제 체크아웃 날짜: %s)", finalBill, actualDate);
-        int confirm = JOptionPane.showConfirmDialog(this, message, "결제 확인", JOptionPane.YES_NO_OPTION);
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            boolean success = controller.processFinalCheckout(currentRoomId, actualDate, finalBill);
-            
-            if (success) {
-                JOptionPane.showMessageDialog(this, "체크아웃이 완료되었습니다!", "성공", JOptionPane.INFORMATION_MESSAGE);
-                resetView();
-            } else {
-                JOptionPane.showMessageDialog(this, "체크아웃 처리 중 오류가 발생했습니다.", "오류", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
     
-    private void resetView() {
-        currentRoomId = -1;
-        currentBooking = null;
+    /** View의 모든 상태를 초기화 */
+    public void resetView() {
         roomField.setText("");
         guestLabel.setText("고객명: -");
         plannedDateLabel.setText("예정 체크아웃: -");
-        totalBillLabel.setText("최종 청구 금액: 0.0원");
+        totalBillLabel.setText("최종 청구 금액: 0원");
         ((DefaultTableModel) extraChargeTable.getModel()).setRowCount(0);
         checkoutButton.setEnabled(false);
     }
-    
-    // 메인 실행 예시
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("호텔 체크아웃 관리 시스템 (checkOut)");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.add(new CheckoutView());
-            frame.setSize(600, 500);
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        });
+
+    /** Controller가 사용자에게 메시지 표시 */
+    public void showMessage(String message, String title, int messageType) {
+        JOptionPane.showMessageDialog(this, message, title, messageType);
     }
 }

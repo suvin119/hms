@@ -1,134 +1,153 @@
 package checkOut;
 
-import UnitServices.ServiceDAO;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import javax.swing.JOptionPane; 
+import javax.swing.JPanel;
+
+// Room 클래스
+import roomAdmin.Room; 
+
+// Pay 패키지의 클래스들
+import Pay.BillingController; 
+import Pay.BookingInfo; 
 
 public class CheckOutController {
 
-    private CheckOutView view;
-    private List<Room> rooms;
-    private ServiceDAO serviceDAO;
-    private CheckOutInfo currentInfo; // 체크아웃 정보를 담을 객체
+    private final CheckOutView view; 
+    private List<Room> rooms; // 객실 목록 (DB 대용)
+    private BillingController billingController; 
+    private BookingInfo currentBooking; 
 
-    public CheckOutController(CheckOutView view) {
+    // 💡 1. 메인 화면으로 돌아가기 위한 콜백 필드 추가 (Runnable은 성공/뒤로가기 모두 사용)
+    private Runnable onNavigateToMain;
+
+    public CheckOutController(CheckOutView view, List<Room> initialRooms) { 
         this.view = view;
-        this.rooms = Room.loadRooms(); // Room 클래스에서 파일 읽어오기
-        this.serviceDAO = new ServiceDAO(); // 서비스 데이터 관리 객체
+        this.rooms = initialRooms; 
+        this.billingController = new BillingController(); 
 
-        // 뷰의 버튼들과 리스너 연결
-        view.setSearchListener(new SearchListener());
-        view.setCalculateListener(new CalculateListener());
-        view.setCheckOutListener(new CheckOutListener());
-        view.setBackListener(new BackListener());
+        view.addSearchListener(new SearchListener()); 
+        view.addCheckoutListener(new CheckOutListener()); 
+        view.addBackListener(new BackListener());
     }
-
+    
+    // 💡 2. Main.java에서 호출하는 setOnSuccess 메서드 구현
+    public void setOnSuccess(Runnable action) {
+        this.onNavigateToMain = action;
+    }
+    
+    // 💡 3. Main.java에서 호출하는 getView() 메서드 구현 (이미 있었지만 재확인)
+public CheckOutView getView() { 
+        return this.view; 
+    }
+    
     // ----------------------------
-    // 1. 객실 조회 리스너
+    // 1. 객실 정보 조회 및 계산 리스너
     // ----------------------------
     class SearchListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String roomNum = view.getRoomNumber();
-            if (roomNum.isEmpty()) {
-                view.showMessage("객실 번호를 입력하세요.");
+            String roomNumStr = view.getRoomNumber();
+            
+            int currentRoomId;
+            try {
+                // 방 번호 입력 오류 처리
+                currentRoomId = Integer.parseInt(roomNumStr);
+            } catch (NumberFormatException ex) {
+                view.showMessage("유효한 방 번호를 입력하세요.", "오류", JOptionPane.ERROR_MESSAGE);
+                view.resetView();
                 return;
             }
 
-            Room room = findRoom(roomNum);
-            if (room == null) {
-                view.showMessage("존재하지 않는 객실입니다.");
-                return;
+            // 1. BillingController를 통해 예약 정보 조회
+            Optional<BookingInfo> bookingOpt = billingController.getBookingDetails(currentRoomId);
+
+            if (bookingOpt.isPresent()) {
+                currentBooking = bookingOpt.get();
+                
+                // 2. View에 고객 및 부대 서비스 정보 업데이트
+                view.displayBookingInfo(currentBooking); 
+
+                // 3. 최종 금액 계산 (부대 서비스 + 지연 수수료 포함)
+                LocalDate actualCheckOutDate = LocalDate.now();    
+                double totalBill = billingController.calculateFinalBill(currentRoomId, actualCheckOutDate);
+                view.displayTotalBill(totalBill);
+                
+            } else {
+                view.showMessage("해당 방의 예약 정보를 찾을 수 없습니다.", "정보 없음", JOptionPane.WARNING_MESSAGE);
+                view.resetView();
             }
-
-            // 부대 서비스 총액 조회 (ServiceDAO 이용)
-            int serviceTotal = 0;
-            if (serviceDAO != null) {
-                serviceTotal = serviceDAO.getServiceTotalByRoom(roomNum);
-            }
-
-            // 체크아웃 정보 객체 생성 (데이터가 없다면 가짜 데이터라도 넣어서 에러 방지)
-            currentInfo = new CheckOutInfo(
-                    roomNum,
-                    "고객", // 나중에 고객 이름 연동 필요
-                    room.getRoomNumber(),
-                    "2025-11-20", // 체크인 날짜 (임시)
-                    "2025-11-24", // 체크아웃 날짜 (임시)
-                    serviceTotal,
-                    0 // 할인 금액
-            );
-
-            view.setInfoText(currentInfo.formatInfo());
         }
     }
 
     // ----------------------------
-    // 2. 요금 계산 리스너
-    // ----------------------------
-    class CalculateListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (currentInfo == null) {
-                view.showMessage("먼저 객실 조회를 해주세요.");
-                return;
-            }
-
-            int total = currentInfo.getTotalFee();
-            view.setInfoText(currentInfo.formatInfo() +
-                    "\n----------------\n총 결제 금액 = " + total + "원");
-        }
-    }
-
-    // ----------------------------
-    // 3. 체크아웃 처리 리스너
+    // 2. 체크아웃 및 결제 리스너
     // ----------------------------
     class CheckOutListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (currentInfo == null) {
-                view.showMessage("먼저 객실 조회를 해주세요.");
+            if (currentBooking == null) {
+                view.showMessage("먼저 객실 조회를 해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            Room room = findRoom(currentInfo.getRoomNumber());
-            if (room != null) {
-                // Room.java에서 만든 Enum Status 사용
-                room.setStatus(Room.Status.EMPTY);
-            }
+            int currentRoomId = currentBooking.getRoomId();
+            String roomNumStr = String.valueOf(currentRoomId); 
+            
+            // 테스트를 위해 예정일보다 하루 늦게 체크아웃 처리 (지연 수수료 계산 유도)
+            LocalDate actualDate = currentBooking.getPlannedCheckOutDate().plusDays(1);    
+            
+            // 1. 최종 금액 재계산
+            double finalBill = billingController.calculateFinalBill(currentRoomId, actualDate);
+            
+            String message = String.format("총 금액 %,.0f원을 결제하고 체크아웃 하시겠습니까?\n(실제 체크아웃 날짜: %s)", finalBill, actualDate);
+            
+            int confirm = JOptionPane.showConfirmDialog(view, message, "결제 확인", JOptionPane.YES_NO_OPTION);
 
-            // 부대 서비스 내역 초기화
-            if (serviceDAO != null) {
-                serviceDAO.clearServiceByRoom(currentInfo.getRoomNumber());
+            if (confirm == JOptionPane.YES_OPTION) {
+                // 2. BillingController를 통해 최종 결제 및 DB 처리
+                boolean success = billingController.processFinalCheckout(currentRoomId, actualDate, finalBill);
+                
+                if (success) {
+                    // 3. Room 상태 변경 (OCCUPIED -> AVAILABLE)
+                    Room room = findRoom(roomNumStr); 
+                    if (room != null) {
+                        room.setStatus(Room.Status.AVAILABLE); 
+                    }
+                    
+                    view.showMessage("체크아웃이 완료되었습니다!", "성공", JOptionPane.INFORMATION_MESSAGE);
+                    view.resetView();
+                    currentBooking = null; // 상태 초기화
+                    
+                    // 💡 4. 체크아웃 성공 시 메인 화면으로 이동 요청
+                    if (onNavigateToMain != null) {
+                        onNavigateToMain.run();
+                    }
+                } else {
+                    view.showMessage("체크아웃 처리 중 오류가 발생했습니다.", "오류", JOptionPane.ERROR_MESSAGE);
+                }
             }
-
-            view.showMessage(currentInfo.getRoomNumber() + "호 체크아웃 완료!");
-            view.clearFields();
-            currentInfo = null;
         }
     }
-
+    
     // ----------------------------
-    // 4. 뒤로가기 리스너 (메인 화면 찾기)
+    // 3. 뒤로가기 리스너 (Back 버튼)
     // ----------------------------
     class BackListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            // 현재 패널의 부모들을 거슬러 올라가며 CardLayout을 찾음
-            Container parent = view.getParent();
-            while (parent != null && !(parent.getLayout() instanceof CardLayout)) {
-                parent = parent.getParent();
-            }
-            
-            if (parent != null) {
-                CardLayout layout = (CardLayout) parent.getLayout();
-                layout.show(parent, "MAIN"); // Main.java에서 설정한 이름 "MAIN"
+            // 💡 5. Main.java에 화면 전환을 위임 (체크아웃 성공 시와 동일한 콜백 사용)
+            if (onNavigateToMain != null) {
+                onNavigateToMain.run();
             }
         }
     }
-
-    // 방 번호로 Room 객체 찾기
+    
+    // 방 번호로 Room 객체 찾기 (Room 객체는 String 방 번호를 사용한다고 가정)
     private Room findRoom(String roomNum) {
         for (Room r : rooms) {
             if (r.getRoomNumber().equals(roomNum)) return r;
