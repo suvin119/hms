@@ -9,11 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-/**
- * View: 체크아웃 UI 구현. 
- * 모든 비즈니스 로직은 Controller(CheckOutController)에게 위임합니다.
- * @author subin
- */
+
 public class CheckOutView extends JPanel {
     
     // UI 요소 선언

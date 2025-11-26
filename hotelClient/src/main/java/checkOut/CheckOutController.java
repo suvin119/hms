@@ -25,16 +25,25 @@ public class CheckOutController {
     // 💡 1. 메인 화면으로 돌아가기 위한 콜백 필드 추가 (Runnable은 성공/뒤로가기 모두 사용)
     private Runnable onNavigateToMain;
 
-    public CheckOutController(CheckOutView view, List<Room> initialRooms) { 
+   public CheckOutController(CheckOutView view, List<Room> initialRooms) { 
         this.view = view;
         this.rooms = initialRooms; 
-        this.billingController = new BillingController(); 
+
+        // 💡 BillingController 초기화 시 발생할 수 있는 연결 오류를 잡고, 오류 발생 시 RuntimeException을 던집니다.
+        try {
+            this.billingController = new BillingController(); 
+            System.out.println("INFO: BillingController 초기화 성공.");
+        } catch (Exception e) {
+            System.err.println("CRITICAL ERROR: BillingController 초기화 실패 (서버 연결 거부).");
+            System.err.println("오류 메시지: " + e.getMessage());
+            // 이 RuntimeException이 Main.java의 try-catch 블록에 의해 안전하게 잡힙니다.
+            throw new RuntimeException("BillingController initialization failed.", e);
+        }
 
         view.addSearchListener(new SearchListener()); 
         view.addCheckoutListener(new CheckOutListener()); 
         view.addBackListener(new BackListener());
     }
-    
     // 💡 2. Main.java에서 호출하는 setOnSuccess 메서드 구현
     public void setOnSuccess(Runnable action) {
         this.onNavigateToMain = action;
