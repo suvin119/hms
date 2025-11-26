@@ -2,10 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+package Login;
+
 /*
  staff.txt 파일에서 계정을 읽고 등록/삭제하는 파일 기반 저장소 구현
 */
-package Login;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -13,23 +14,18 @@ import java.util.List;
 
 public class FileUserRepository implements UserRepository {
 
-    // staff.txt 포맷: id|pw|role
     private static final String FILE_PATH = "staff.txt";
-
-    // ---------- 유틸 ----------
 
     private List<String> loadAllLines() {
         List<String> result = new ArrayList<>();
         File f = new File(FILE_PATH);
 
-        // 파일 없으면 빈 리스트 반환
-        if (!f.exists()) {
-            return result;
-        }
+        if (!f.exists()) return result;
 
-        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"))) {
             String line;
             while ((line = br.readLine()) != null) {
+                // 빈 줄은 무시
                 if (!line.trim().isEmpty()) {
                     result.add(line.trim());
                 }
@@ -41,7 +37,7 @@ public class FileUserRepository implements UserRepository {
     }
 
     private void saveAllLines(List<String> lines) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_PATH))) {
+        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(FILE_PATH), "UTF-8"))) {
             for (String line : lines) {
                 bw.write(line);
                 bw.newLine();
@@ -51,24 +47,21 @@ public class FileUserRepository implements UserRepository {
         }
     }
 
-    // id|pw|role → User 객체로 변환
+    // 파일에서 읽은 한 줄을 User 객체로 변환
     private User parseUser(String line) {
         String[] parts = line.split("\\|");
         if (parts.length < 3) return null;
 
-        String id = parts[0];
-        String pw = parts[1];
-        String role = parts[2];
+        String id = parts[0].trim();
+        String pw = parts[1].trim();
+        String role = parts[2].trim();
 
         return new User(id, pw, role);
     }
 
-    // User → 파일 한 줄 문자열
     private String toLine(User u) {
         return u.getId() + "|" + u.getPassword() + "|" + u.getRole();
     }
-
-    // ---------- 구현 ----------
 
     @Override
     public User findById(String id) {
@@ -81,10 +74,8 @@ public class FileUserRepository implements UserRepository {
         return null;
     }
     
-    //등록
     @Override
     public boolean addUser(String id, String password, String role) {
-        // 이미 존재하면 실패
         if (findById(id) != null) return false;
 
         List<String> lines = loadAllLines();
@@ -94,7 +85,6 @@ public class FileUserRepository implements UserRepository {
         return true;
     }
     
-    //삭제
     @Override
     public boolean deleteUser(String id) {
         List<String> lines = loadAllLines();
@@ -102,11 +92,11 @@ public class FileUserRepository implements UserRepository {
             User u = parseUser(line);
             return u != null && u.getId().equals(id);
         });
-
+        
         if (removed) {
             saveAllLines(lines);
+            return true;
         }
-        return removed;
+        return false;
     }
 }
-
