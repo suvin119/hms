@@ -1,17 +1,15 @@
 package Pay;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
-/**
- * Controller: View의 요청을 받아 Server Logic을 호출하고 결과를 View에 전달
- */
 public class BillingController {
-    
-    private BillingService server; // Server Logic 호출
+
+    private BillingService server;
 
     public BillingController() {
-        this.server = new BillingService(); 
+        this.server = BillingService.getInstance();
     }
 
     public Optional<BookingInfo> getBookingDetails(int roomId) {
@@ -21,8 +19,13 @@ public class BillingController {
     public double calculateFinalBill(int roomId, LocalDate actualCheckOutDate) {
         return server.calculateTotalBill(roomId, actualCheckOutDate);
     }
-    
+
     public boolean processFinalCheckout(int roomId, LocalDate actualCheckOutDate, double finalBill) {
         return server.processCheckout(roomId, actualCheckOutDate, finalBill);
+    }
+
+    /** 부대 서비스 목록 가져오기 */
+    public List<ExtraChargeInfo> getServiceList(int roomId) {
+        return server.getServiceList(roomId);
     }
 }

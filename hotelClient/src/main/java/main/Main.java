@@ -1,10 +1,5 @@
 package main;
 
-/**
- * 호텔 관리 시스템 메인 클래스
- * @author subin
- */
-
 import checkIn.CheckInController;
 import checkOut.CheckOutController;
 import checkOut.CheckOutView;
@@ -12,12 +7,6 @@ import reservation.ReservationController;
 import roomAdmin.RoomAdminController;
 import javax.swing.*;
 import java.awt.*;
-
-//---------------
-import roomAdmin.Room;
-import java.util.ArrayList;
-import java.util.List;
-//---------------
 
 public class Main extends JFrame {
 
@@ -44,15 +33,13 @@ public class Main extends JFrame {
         AdminMenuController adminCtrl = new AdminMenuController();
         RoomAdminController roomCtrl = new RoomAdminController();
 
-        // -------------------------------------------
-        // ✔ 체크아웃 화면 생성 (필수!!)
-        // -------------------------------------------
-        List<Room> dummyRooms = createDummyRooms();
+        // 체크아웃 화면 생성 (더미 방 없음)
         checkOutView = new CheckOutView();
-        checkOutCtrl = new CheckOutController(checkOutView, dummyRooms);
-        // -------------------------------------------
+        checkOutCtrl = new CheckOutController(checkOutView);
 
-        // 메인 메뉴 → 화면 전환
+        // -------------------
+        // 화면 전환 이벤트
+        // -------------------
         mainMenuCtrl.setOnNavigateToReservation(() -> cardLayout.show(mainContainer, "RESERVATION"));
         mainMenuCtrl.setOnNavigateToCheckIn(() -> cardLayout.show(mainContainer, "CHECK_IN"));
         mainMenuCtrl.setOnNavigateToCheckOut(() -> cardLayout.show(mainContainer, "CHECK_OUT"));
@@ -66,6 +53,7 @@ public class Main extends JFrame {
         checkInCtrl.setOnSuccess(() -> cardLayout.show(mainContainer, "MAIN"));
         checkInCtrl.getView().addBackListener(e -> cardLayout.show(mainContainer, "MAIN"));
 
+
         // 체크아웃 화면
         checkOutCtrl.setOnSuccess(() -> cardLayout.show(mainContainer, "MAIN"));
         checkOutView.addBackListener(e -> cardLayout.show(mainContainer, "MAIN"));
@@ -73,12 +61,9 @@ public class Main extends JFrame {
         // 관리자 메뉴
         adminCtrl.setOnBack(() -> cardLayout.show(mainContainer, "MAIN"));
         adminCtrl.setOnNavigateToRoomAdmin(() -> cardLayout.show(mainContainer, "ROOM_ADMIN"));
-
         roomCtrl.getView().addBackListener(e -> cardLayout.show(mainContainer, "ADMIN_MENU"));
 
-        // -------------------------------------------
         // 화면 등록
-        // -------------------------------------------
         mainContainer.add(mainMenuCtrl.getView(), "MAIN");
         mainContainer.add(reservationCtrl.getView(), "RESERVATION");
         mainContainer.add(checkInCtrl.getView(), "CHECK_IN");
@@ -91,14 +76,6 @@ public class Main extends JFrame {
         cardLayout.show(mainContainer, "MAIN");
 
         setVisible(true);
-    }
-
-    /** 더미 객실 생성 */
-    private List<Room> createDummyRooms() {
-        List<Room> rooms = new ArrayList<>();
-        rooms.add(new Room("101", Room.Type.STANDARD, 100000.0, Room.Status.OCCUPIED));
-        rooms.add(new Room("205", Room.Type.DELUXE, 150000.0, Room.Status.AVAILABLE));
-        return rooms;
     }
 
     public static void main(String[] args) {

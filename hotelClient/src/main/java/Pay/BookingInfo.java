@@ -8,11 +8,13 @@ public class BookingInfo {
     private String guestName;
     private LocalDate checkInDate;
     private LocalDate plannedCheckOutDate;
-    private double baseRoomRate; // 1박 기준 요금
-    private double promotionalDiscount; // 전체 숙박 기간에 대한 고정 할인 금액
+    private double baseRoomRate;
+    private double promotionalDiscount;
     private List<ExtraChargeInfo> extraCharges;
 
-    public BookingInfo(int roomId, String guestName, LocalDate checkInDate, LocalDate plannedCheckOutDate, double baseRoomRate, double promotionalDiscount, List<ExtraChargeInfo> extraCharges) {
+    // 기존 생성자 (체크인/예약 정보 기반)
+    public BookingInfo(int roomId, String guestName, LocalDate checkInDate, LocalDate plannedCheckOutDate,
+                       double baseRoomRate, double promotionalDiscount, List<ExtraChargeInfo> extraCharges) {
         this.roomId = roomId;
         this.guestName = guestName;
         this.checkInDate = checkInDate;
@@ -22,7 +24,18 @@ public class BookingInfo {
         this.extraCharges = extraCharges;
     }
 
-    // Getters
+    // ✅ 간편 생성자: 체크아웃 화면에서 최소 정보만으로 생성 가능
+    public BookingInfo(String guestName, LocalDate plannedCheckOutDate, List<ExtraChargeInfo> extraCharges) {
+        this.roomId = 0; // 방 ID 미지정
+        this.guestName = guestName;
+        this.checkInDate = LocalDate.now(); // 체크인 날짜 기본값: 현재
+        this.plannedCheckOutDate = plannedCheckOutDate;
+        this.baseRoomRate = 0; // 기본 요금 미지정
+        this.promotionalDiscount = 0; // 할인 없음
+        this.extraCharges = extraCharges;
+    }
+
+    // Getter
     public int getRoomId() { return roomId; }
     public String getGuestName() { return guestName; }
     public LocalDate getCheckInDate() { return checkInDate; }
@@ -30,4 +43,9 @@ public class BookingInfo {
     public double getBaseRoomRate() { return baseRoomRate; }
     public double getPromotionalDiscount() { return promotionalDiscount; }
     public List<ExtraChargeInfo> getExtraCharges() { return extraCharges; }
+
+    // Setter: 부대 서비스 목록 업데이트
+    public void setExtraCharges(List<ExtraChargeInfo> extraCharges) {
+        this.extraCharges = extraCharges;
+    }
 }
