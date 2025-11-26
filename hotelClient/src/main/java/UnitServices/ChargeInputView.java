@@ -18,7 +18,7 @@ public class ChargeInputView extends JPanel {
         this.controller = new ServiceController();
         setLayout(new GridLayout(5, 2, 10, 10));
 
-        String[] services = {"Room Service", "Mini Bar", "Laundry", "Restaurant"};
+        String[] services = {"룸 서비스", "미니바", "세탁", "식당"};
         serviceCombo = new JComboBox<>(services);
         roomField = new JTextField(5);
         amountField = new JTextField(5);
