@@ -2,6 +2,8 @@ package main;
 
 import Login.UserManageController;
 import UnitServices.ChargeInputView;
+import UnitServices.MenuManageController;
+import report.ReportController;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -27,22 +29,27 @@ public class AdminMenuController {
             }
         });
 
-        // 부대 서비스 버튼 → JFrame으로 ChargeInputView 띄움
-        view.setServiceListener(e -> SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("부대 서비스 관리");
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.add(new ChargeInputView());
-            frame.setSize(400, 250);
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        }));
-
-        // 기타 버튼
-        view.setCustomerListener(commonListener);
-        view.setReportListener(commonListener);
+        // 부대 서비스 버튼
+        view.setServiceListener(e -> {
+            MenuManageController menuCtrl = new MenuManageController();
+            menuCtrl.showWindow(); 
+        });
+      
+      // 보고서 버튼 -> 보고서 창 띄우기
+        view.setReportListener(e -> {
+            ReportController reportCtrl = new ReportController();
+            reportCtrl.showWindow();
+        });
+        // 직원 관리 버튼 
         view.setUserListener(e -> {
             UserManageController ctrl = new UserManageController(null);
             ctrl.show();
+        });
+        // 기타 버튼
+        view.setCustomerListener(commonListener);
+        view.setReportListener(e -> {
+            ReportController reportCtrl = new ReportController();
+            reportCtrl.showWindow(); 
         });
 
         // 뒤로가기
