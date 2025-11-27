@@ -2,7 +2,7 @@ package main;
 
 import Login.UserManageController;
 import UnitServices.ChargeInputView;
-import UnitServices.MenuManageController;
+import UnitServices.ServiceController;
 import report.ReportController;
 
 import javax.swing.*;
@@ -31,7 +31,7 @@ public class AdminMenuController {
 
         // 부대 서비스 버튼
         view.setServiceListener(e -> {
-            MenuManageController menuCtrl = new MenuManageController();
+            ServiceController menuCtrl = new ServiceController();
             menuCtrl.showWindow(); 
         });
       

@@ -110,80 +110,59 @@ public class CheckOutController {
     // =====================================================
     // ========== 서버에서 rooms.txt 읽기 ================
     // =====================================================
-    private BookingInfo loadBookingFromServer(int roomId) {
-        String response = sendServerRequest("ROOM_LOAD");
+private BookingInfo loadBookingFromServer(int roomId) {
+    String response = sendServerRequest("ROOMS_LOAD|" + roomId);
 
-        if (response == null || !response.startsWith("OK|")) {
-            return null; // 방 정보 불러오기 실패
+    if (response == null || !response.startsWith("OK|")) return null;
+
+    String[] rows = response.substring(3).split("#");
+    for (String row : rows) {
+        String[] parts = row.split("\\|");
+        int id = Integer.parseInt(parts[0]);
+        String type = parts[1];
+        double baseRate = Double.parseDouble(parts[2]);
+        String status = parts[3];
+
+        if (id == roomId && status.equals("투숙중")) {
+            List<ExtraChargeInfo> extras = loadExtraServicesFromServer(roomId);
+            LocalDate checkIn = LocalDate.now().minusDays(1);
+            LocalDate plannedOut = LocalDate.now().plusDays(1);
+            return new BookingInfo(roomId, "고객" + roomId, checkIn, plannedOut, baseRate, 0, extras);
         }
-
-        // "OK|방ID|타입|요금|상태#방ID|타입|요금|상태#..."
-        String data = response.substring(3);
-        String[] rows = data.split("#");
-
-        for (String row : rows) {
-            String[] parts = row.split("\\|");
-            if (parts.length < 4) continue;
-
-            int id = Integer.parseInt(parts[0]);
-            String type = parts[1];
-            double baseRate = Double.parseDouble(parts[2]);
-            String status = parts[3];
-
-            if (id == roomId && status.equals("투숙중")) {
-
-                // 부대 서비스도 서버에서 불러오기
-                List<ExtraChargeInfo> extras = loadExtraServicesFromServer(roomId);
-
-                LocalDate checkIn = LocalDate.now().minusDays(1);
-                LocalDate plannedOut = LocalDate.now().plusDays(1);
-
-                return new BookingInfo(roomId, "고객" + roomId, checkIn, plannedOut, baseRate, 0, extras);
-            }
-        }
-
-        return null;
     }
+    return null;
+}
 
-    // =====================================================
-    // ===== 서버에서 service_usage.txt 읽기 (부대서비스) =====
-    // =====================================================
-    private List<ExtraChargeInfo> loadExtraServicesFromServer(int roomId) {
-        List<ExtraChargeInfo> list = new ArrayList<>();
+private List<ExtraChargeInfo> loadExtraServicesFromServer(int roomId) {
+    List<ExtraChargeInfo> list = new ArrayList<>();
+    String response = sendServerRequest("ROOMS_SERVICE_USAGE|" + roomId);
 
-        String response = sendServerRequest("ROOM_SERVICE_USAGE");
-        if (response == null || !response.startsWith("OK|")) {
-            return list;
-        }
+    if (response == null || !response.startsWith("OK|")) return list;
 
-        // "OK|방ID|서비스ID|타입|금액#방ID|서비스ID|타입|금액..."
-        String data = response.substring(3);
-        String[] rows = data.split("#");
+    String[] rows = response.substring(3).split("#");
+    for (String row : rows) {
+        String[] parts = row.split("\\|");
+        if (parts.length < 4) continue;
 
-        for (String row : rows) {
-            String[] parts = row.split("\\|");
-            if (parts.length < 4) continue;
+        int rId = Integer.parseInt(parts[0]);
+        if (rId != roomId) continue;
 
-            int rId = Integer.parseInt(parts[0]);
-            if (rId != roomId) continue;
+        int serviceType = Integer.parseInt(parts[2]);
+        double amount = Double.parseDouble(parts[3]);
 
-            int serviceType = Integer.parseInt(parts[2]);
-            double amount = Double.parseDouble(parts[3]);
+        String name = switch (serviceType) {
+            case 1 -> "룸 서비스";
+            case 2 -> "미니바";
+            case 3 -> "세탁";
+            case 4 -> "식당";
+            default -> "기타";
+        };
 
-            String name;
-            switch (serviceType) {
-                case 1: name = "룸 서비스"; break;
-                case 2: name = "미니바"; break;
-                case 3: name = "세탁"; break;
-                case 4: name = "식당"; break;
-                default: name = "기타"; break;
-            }
-
-            list.add(new ExtraChargeInfo(name, amount));
-        }
-
-        return list;
+        list.add(new ExtraChargeInfo(name, amount));
     }
+    return list;
+}
+
 
     // =====================================================
     // ============== 서버 메시지 전송 메서드 ==============

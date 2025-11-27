@@ -12,6 +12,7 @@ import java.util.List;
 
 public class RoomAdminService {
     private static final String ROOM_FILE = "src/main/resources/rooms.txt";
+    private static final String SERVICE_FILE = "src/main/resources/service_usage.txt";
     private static List<String> roomLines = Collections.synchronizedList(new ArrayList<>());
     
     // 데이터를 확인했는지
@@ -33,6 +34,15 @@ public class RoomAdminService {
             case "ROOM_LIST":
                 return getRoomListString();
             
+            case "ROOMS_LOAD":
+            int roomIdLoad = Integer.parseInt(parts[1]);
+            return loadRoom(roomIdLoad);
+            
+            case "ROOMS_SERVICE_USAGE":
+            int roomIdService = Integer.parseInt(parts[1]);
+            return loadRoomServices(roomIdService);
+                
+                
             default:
                 return "ERROR|알 수 없는 명령";
         }
@@ -120,6 +130,40 @@ public class RoomAdminService {
             System.out.println("[RoomAdminService] 파일 로드 실패");
         }
     }
+
+    // ================= 체크아웃용 =================
+    public String loadRooms(int roomId) {
+        try (BufferedReader br = new BufferedReader(new FileReader(ROOM_FILE))) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split("\\|");
+                if (Integer.parseInt(data[0]) == roomId && data[3].equals("투숙중")) {
+                    sb.append(line).append("#");
+                }
+            }
+            return sb.length() > 0 ? "OK|" + sb.toString() : "EMPTY";
+        } catch (Exception e) {
+            return "ERROR|rooms.txt 읽기 실패";
+        }
+    }
+
+    public String loadRoomServices(int roomId) {
+        try (BufferedReader br = new BufferedReader(new FileReader(SERVICE_FILE))) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split("\\|");
+                if (Integer.parseInt(data[0]) == roomId) sb.append(line).append("#");
+            }
+            return sb.length() > 0 ? "OK|" + sb.toString() : "EMPTY";
+        } catch (Exception e) {
+            return "ERROR|service_usage.txt 읽기 실패";
+        }
+    }
+}
+
+    
 
     private static synchronized void saveRoomsToFile() {
         File file = new File(ROOM_FILE);
