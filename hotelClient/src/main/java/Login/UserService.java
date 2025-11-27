@@ -16,7 +16,7 @@ public class UserService {
     private final int SERVER_PORT = 9999;
 
     // 생성자
-    public UserService(Object ignored) { }
+    public UserService() { }
 
     // 로그인 요청
     public User authenticate(String id, String password) {

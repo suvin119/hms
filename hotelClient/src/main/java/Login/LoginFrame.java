@@ -14,7 +14,7 @@ public class LoginFrame extends JFrame {
     private JPasswordField txtPassword;
     
     // 파일 기반 유저 서비스
-    private final UserService userService = new UserService(new FileUserRepository());
+    private final UserService userService = new UserService();
             
     public LoginFrame() {
         setTitle("HMS 로그인");

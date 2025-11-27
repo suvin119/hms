@@ -18,7 +18,7 @@ public class UserManageController {
     private final UserManageView view;
 
     public UserManageController(Frame owner) {
-        this.service = new UserService(new FileUserRepository());
+        this.service = new UserService();
         this.view = new UserManageView(owner);
         initListeners();
     }
