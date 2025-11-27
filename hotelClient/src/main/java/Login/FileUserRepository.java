@@ -14,7 +14,7 @@ import java.util.List;
 
 public class FileUserRepository implements UserRepository {
 
-    private static final String FILE_PATH = "staff.txt";
+    private static final String FILE_PATH = "src/main/resources/staff.txt";
 
     private List<String> loadAllLines() {
         List<String> result = new ArrayList<>();

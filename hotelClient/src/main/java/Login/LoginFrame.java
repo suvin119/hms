@@ -78,4 +78,9 @@ public class LoginFrame extends JFrame {
         dispose(); // 로그인 창 닫기
         new main.Main(); // 메인 화면 열기
     }
+   public static void main(String[] args) {
+    javax.swing.SwingUtilities.invokeLater(() -> {
+        new LoginFrame().setVisible(true);
+    });
+}
 }
