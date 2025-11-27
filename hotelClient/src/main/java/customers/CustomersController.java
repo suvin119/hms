@@ -100,6 +100,10 @@ public class CustomersController {
         view.clearTable();
         
         List<String> responses = sendRequestForList("GET_CUSTOMERS");
+        
+        if (responses.isEmpty()) {
+             return;
+        }
 
         for (String line : responses) {
             // "이름|전화번호|등급|방문수" 파싱
@@ -129,27 +133,23 @@ public class CustomersController {
             return "ERROR|서버 연결 실패";
         }
     }
-
-    // 리스트용
+    
     private List<String> sendRequestForList(String msg) {
         List<String> resultList = new ArrayList<>();
-        
-        try (Socket socket = new Socket(SERVER_IP, SERVER_PORT);
-             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-            
-            out.println(msg);
-            
-            String line = in.readLine();
-            if (line != null && line.startsWith("LIST_START")) {
-                while ((line = in.readLine()) != null) {
-                    if (line.equals("LIST_END")) break; // 종료
-                    resultList.add(line);
+
+        String response = sendRequest(msg);
+
+        if (response != null && response.startsWith("OK|")) {
+            if (response.length() > 3) {
+                String rawData = response.substring(3); 
+                
+                if (!rawData.isEmpty()) {
+                    String[] rows = rawData.split("/");
+                    for (String row : rows) {
+                        resultList.add(row);
+                    }
                 }
             }
-            
-        } catch (IOException ex) {
-            ex.printStackTrace();
         }
         
         return resultList;

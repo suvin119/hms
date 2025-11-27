@@ -13,27 +13,33 @@ public class CustomersService {
     private final String RES_FILE = "src/main/resources/reservations.txt";
 
     // 1. 고객 목록 전체 가져오기 
-    public List<String> getAllCustomers() {
-        List<String> list = new ArrayList<>();
+    public String getAllCustomers() {
+        StringBuilder sb = new StringBuilder();
         File file = new File(CUSTOMER_FILE);
 
-        if (!file.exists()) return list; 
+        if (!file.exists()) {
+        return "FAIL|데이터 파일이 없습니다.";
+        }
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (!line.trim().isEmpty()) {
-                    list.add(line);
+                    sb.append(line).append("/");
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
+            return "FAIL|파일 읽기 오류";
         }
-        return list;
+        if (sb.length() == 0) {
+        return "FAIL|저장된 고객 데이터가 없습니다.";
+        }
+        return "OK|" + sb.toString();
     }
 
     // 2. 예약 내역 기반 신규 고객 동기화
-    public boolean syncNewCustomers() {
+    public String syncNewCustomers() {
         Set<String> existingCustomers = new HashSet<>();
         List<String> newCustomers = new ArrayList<>();
 
@@ -47,12 +53,14 @@ public class CustomersService {
                     existingCustomers.add(data[0] + "|" + data[1]);
                 }
             }
+        } catch (FileNotFoundException e) {
         } catch (IOException e) {
+            return "FAIL|고객 파일 읽기 오류: " + e.getMessage();
         }
 
         // 예약 파일 읽어서 신규 고객 찾기
         File resFile = new File(RES_FILE);
-        if (!resFile.exists()) return false;
+        if (!resFile.exists()) return "FAIL|예약 파일이 존재하지 않습니다.";
 
         try (BufferedReader br = new BufferedReader(new FileReader(resFile))) {
             String line;
@@ -73,7 +81,7 @@ public class CustomersService {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
+            return "FAIL|예약 파일 읽기 오류";
         }
 
         // 신규 고객 추가
@@ -85,20 +93,20 @@ public class CustomersService {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                return false;
+                return "FAIL|고객 파일 쓰기 오류";
             }
         }
         
-        return true; // 성공
+        return "SUCCESS";
     }
 
     // 3. 고객 등급 변경
-    public boolean updateCustomerGrade(String targetName, String targetPhone, String newGrade) {
+    public String updateCustomerGrade(String targetName, String targetPhone, String newGrade) {
         List<String> allLines = new ArrayList<>();
         boolean isUpdated = false;
 
         File file = new File(CUSTOMER_FILE);
-        if (!file.exists()) return false;
+        if (!file.exists()) return "FAIL|고객 파일이 없습니다.";
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
@@ -121,7 +129,7 @@ public class CustomersService {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
+            return "FAIL|파일 읽기 오류";
         }
 
         if (isUpdated) {
@@ -130,13 +138,13 @@ public class CustomersService {
                     bw.write(line);
                     bw.newLine();
                 }
-                return true;
+                return "SUCCESS";
             } catch (IOException e) {
                 e.printStackTrace();
-                return false;
+                return "FAIL|파일 쓰기 오류";
             }
         }
 
-        return false;
+        return "FAIL|해당 고객을 찾을 수 없습니다.";
     }
 }

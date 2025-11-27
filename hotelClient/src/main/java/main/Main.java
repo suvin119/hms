@@ -4,6 +4,7 @@ import checkIn.CheckInController;
 import checkOut.CheckOutController;
 import checkOut.CheckOutView;
 import reservation.ReservationController;
+import customers.CustomersController;
 import roomAdmin.RoomAdminController;
 import javax.swing.*;
 import java.awt.*;
@@ -32,6 +33,7 @@ public class Main extends JFrame {
         CheckInController checkInCtrl = new CheckInController();
         AdminMenuController adminCtrl = new AdminMenuController();
         RoomAdminController roomCtrl = new RoomAdminController();
+        CustomersController customerCtrl = new CustomersController();
 
         // 체크아웃 화면 생성 (더미 방 없음)
         checkOutView = new CheckOutView();
@@ -61,7 +63,9 @@ public class Main extends JFrame {
         // 관리자 메뉴
         adminCtrl.setOnBack(() -> cardLayout.show(mainContainer, "MAIN"));
         adminCtrl.setOnNavigateToRoomAdmin(() -> cardLayout.show(mainContainer, "ROOM_ADMIN"));
+        adminCtrl.setOnNavigateToCustomer(() -> cardLayout.show(mainContainer, "CUSTOMER_ADMIN"));
         roomCtrl.getView().addBackListener(e -> cardLayout.show(mainContainer, "ADMIN_MENU"));
+        customerCtrl.getView().addBackListener(e -> cardLayout.show(mainContainer, "ADMIN_MENU"));
 
         // 화면 등록
         mainContainer.add(mainMenuCtrl.getView(), "MAIN");
@@ -70,6 +74,7 @@ public class Main extends JFrame {
         mainContainer.add(checkOutView, "CHECK_OUT");
         mainContainer.add(adminCtrl.getView(), "ADMIN_MENU");
         mainContainer.add(roomCtrl.getView(), "ROOM_ADMIN");
+        mainContainer.add(customerCtrl.getView(), "CUSTOMER_ADMIN");
 
         // 메인 표시
         add(mainContainer);
