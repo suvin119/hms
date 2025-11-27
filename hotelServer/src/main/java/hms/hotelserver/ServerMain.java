@@ -43,13 +43,46 @@ public class ServerMain {
             ReservationService reservationService = new ReservationService();
             CheckOutService checkOutService = new CheckOutService();
             RoomAdminService roomService = new RoomAdminService();
+            StaffService staffService = new StaffService();
+            
             String response = "ERROR|잘못된 요청";
 
             if (request != null) {
                 String[] parts = request.split("\\|");
                 String command = parts[0];
+                
+                //로그인
+                if (command.equals("LOGIN")) {
+                    // LOGIN|id|pw
+                    if (parts.length >= 3) {
+                        response = staffService.login(parts[1], parts[2]);
+                    } else {
+                        response = "ERROR|INVALID_FORMAT";
+                    }
+                 }
+                 
+                //직원 추가
+                else if (command.equals("STAFF_ADD")) {
+                    // STAFF_ADD|id|pw|role
+                    if (parts.length >= 4) {
+                        response = staffService.addStaff(parts[1], parts[2], parts[3]);
+                    } else {
+                        response = "ERROR|INVALID_FORMAT";
+                    }
+                }
+                
+                //직원 삭제
+                else if (command.equals("STAFF_DELETE")) {
+                    // STAFF_DELETE|id
+                    if (parts.length >= 2) {
+                        response = staffService.deleteStaff(parts[1]);
+                    } else {
+                        response = "ERROR|INVALID_FORMAT";
+                    }
+                }
 
-                if (command.equals("FIND_RESERVATION")) {
+    
+                else if (command.equals("FIND_RESERVATION")) {
                     response = checkInService.findReservation(parts[1]);
                 }
                 else if (command.equals("CONFIRM_CHECKIN")) {
