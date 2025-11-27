@@ -60,12 +60,7 @@ public class ServerMain {
                 else if (command.startsWith("ROOM_")) {
                     response = roomService.processRequest(command, parts);
                 }
-                else if (command.equals("ROOMS_LOAD")) {
-                    response = roomService.processRequest(command, parts);
-                }
-                else if (command.equals("ROOMS_SERVICE_USAGE")){
-                     response = roomService.processRequest(command, parts);
-                }
+                
             }
             
             out.println(response); 

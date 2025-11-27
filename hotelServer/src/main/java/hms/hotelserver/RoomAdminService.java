@@ -34,13 +34,12 @@ public class RoomAdminService {
             case "ROOM_LIST":
                 return getRoomListString();
             
-            case "ROOMS_LOAD":
-            int roomIdLoad = Integer.parseInt(parts[1]);
-            return loadRoom(roomIdLoad);
-            
+           case "ROOMS_LOAD":
+                int roomId = Integer.parseInt(parts[1]);
+                return loadRoom(roomId); 
             case "ROOMS_SERVICE_USAGE":
-            int roomIdService = Integer.parseInt(parts[1]);
-            return loadRoomServices(roomIdService);
+                int roomIdService = Integer.parseInt(parts[1]);
+                return loadRoomServices(roomIdService); 
                 
                 
             default:
@@ -131,8 +130,21 @@ public class RoomAdminService {
         }
     }
 
-    // ================= 체크아웃용 =================
-    public String loadRooms(int roomId) {
+    
+
+    private static synchronized void saveRoomsToFile() {
+        File file = new File(ROOM_FILE);
+        if (file.getParentFile() != null) file.getParentFile().mkdirs();
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+            for (String line : roomLines) {
+                bw.write(line);
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // ====================== 체크아웃용 ======================
+    public String loadRoom(int roomId) {
         try (BufferedReader br = new BufferedReader(new FileReader(ROOM_FILE))) {
             StringBuilder sb = new StringBuilder();
             String line;
@@ -154,27 +166,13 @@ public class RoomAdminService {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] data = line.split("\\|");
-                if (Integer.parseInt(data[0]) == roomId) sb.append(line).append("#");
+                if (Integer.parseInt(data[0]) == roomId) {
+                    sb.append(line).append("#");
+                }
             }
             return sb.length() > 0 ? "OK|" + sb.toString() : "EMPTY";
         } catch (Exception e) {
             return "ERROR|service_usage.txt 읽기 실패";
-        }
-    }
-}
-
-    
-
-    private static synchronized void saveRoomsToFile() {
-        File file = new File(ROOM_FILE);
-        if (file.getParentFile() != null) file.getParentFile().mkdirs();
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
-            for (String line : roomLines) {
-                bw.write(line);
-                bw.newLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }
