@@ -41,6 +41,7 @@ public class ServerMain {
             // 서비스 로직 연결
             CheckInService checkInService = new CheckInService();
             ReservationService reservationService = new ReservationService();
+            CheckOutService checkOutService = new CheckOutService();
             RoomAdminService roomService = new RoomAdminService();
             String response = "ERROR|잘못된 요청";
 
@@ -59,6 +60,15 @@ public class ServerMain {
                 }
                 else if (command.startsWith("ROOM_")) {
                     response = roomService.processRequest(command, parts);
+                }
+                else if (command.equals("CHECKOUT")) {
+                    response = checkOutService.checkoutRoom(Integer.parseInt(parts[1]));
+}
+                else if (command.equals("ROOMS_LOAD")){
+                    response = checkOutService.loadRoom(Integer.parseInt(parts[1]));
+                }
+                else if (command.equals("ROOMS_SERVICE_USAGE")){
+                    response = checkOutService.loadRoomServices(Integer.parseInt(parts[1]));
                 }
                 
             }

@@ -3,7 +3,7 @@ package main;
 import Login.UserManageController;
 import UnitServices.ChargeInputView;
 import UnitServices.ServiceController;
-import report.ReportController;
+//import report.ReportController;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -31,14 +31,14 @@ public class AdminMenuController {
 
         // 부대 서비스 버튼
         view.setServiceListener(e -> {
-            ServiceController menuCtrl = new ServiceController();
-            menuCtrl.showWindow(); 
+            //ServiceController menuCtrl = new ServiceController();
+            //menuCtrl.showWindow(); 
         });
       
       // 보고서 버튼 -> 보고서 창 띄우기
         view.setReportListener(e -> {
-            ReportController reportCtrl = new ReportController();
-            reportCtrl.showWindow();
+            //ReportController reportCtrl = new ReportController();
+            //reportCtrl.showWindow();
         });
         // 직원 관리 버튼 
         view.setUserListener(e -> {
@@ -48,8 +48,8 @@ public class AdminMenuController {
         // 기타 버튼
         view.setCustomerListener(commonListener);
         view.setReportListener(e -> {
-            ReportController reportCtrl = new ReportController();
-            reportCtrl.showWindow(); 
+            //ReportController reportCtrl = new ReportController();
+            //reportCtrl.showWindow(); 
         });
 
         // 뒤로가기

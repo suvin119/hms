@@ -12,7 +12,6 @@ import java.util.List;
 
 public class RoomAdminService {
     private static final String ROOM_FILE = "src/main/resources/rooms.txt";
-    private static final String SERVICE_FILE = "src/main/resources/service_usage.txt";
     private static List<String> roomLines = Collections.synchronizedList(new ArrayList<>());
     
     // 데이터를 확인했는지
@@ -33,14 +32,6 @@ public class RoomAdminService {
             
             case "ROOM_LIST":
                 return getRoomListString();
-            
-           case "ROOMS_LOAD":
-                int roomId = Integer.parseInt(parts[1]);
-                return loadRoom(roomId); 
-                
-            case "ROOMS_SERVICE_USAGE":
-                int roomIdService = Integer.parseInt(parts[1]);
-                return loadRoomServices(roomIdService); 
                 
                 
             default:
@@ -144,38 +135,6 @@ public class RoomAdminService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+   }   
         
-        
-        // ====================== 체크아웃용 ======================
-    public String loadRoom(int roomId) {
-        try (BufferedReader br = new BufferedReader(new FileReader(ROOM_FILE))) {
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split("\\|");
-                if (Integer.parseInt(data[0]) == roomId && data[3].equals("투숙중")) {
-                    sb.append(line).append("#");
-                }
-            }
-            return sb.length() > 0 ? "OK|" + sb.toString() : "EMPTY";
-        } catch (Exception e) {
-            return "ERROR|rooms.txt 읽기 실패";
-        }
-    }
-
-    public String loadRoomServices(int roomId) {
-        try (BufferedReader br = new BufferedReader(new FileReader(SERVICE_FILE))) {
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split("\\|");
-                if (Integer.parseInt(data[0]) == roomId) {
-                    sb.append(line).append("#");
-                }
-            }
-            return sb.length() > 0 ? "OK|" + sb.toString() : "EMPTY";
-        } catch (Exception e) {
-            return "ERROR|service_usage.txt 읽기 실패";
-        }
-    }
 }

@@ -86,18 +86,26 @@ public class CheckOutController {
             if (total < 0) total = 0;
 
             view.displayTotalBill(total);
+            
+            /// 추가=========
+            boolean updateSuccess = processCheckoutOnServer(currentBooking.getRoomId());
 
-            JOptionPane.showMessageDialog(view,
-                    "결제가 완료되었습니다.\n총 금액: " + String.format("%,.0f원", total),
-                    "체크아웃 완료", JOptionPane.INFORMATION_MESSAGE);
+            if (updateSuccess) {
+                JOptionPane.showMessageDialog(view,
+                        "결제가 완료되었습니다.\n총 금액: " + String.format("%,.0f원", total),
+                        "체크아웃 완료", JOptionPane.INFORMATION_MESSAGE);
 
-            if (onSuccessCallback != null) {
-                onSuccessCallback.run();
+                if (onSuccessCallback != null) {
+                    onSuccessCallback.run();
+                }
+
+                view.resetView();
+                currentBooking = null;
+            } else {
+                view.showMessage("서버 통신 오류로 체크아웃 처리에 실패했습니다.", "오류", JOptionPane.ERROR_MESSAGE);
             }
-
-            view.resetView();
-            currentBooking = null;
         });
+        /////======
     }
 
     /** 뷰 갱신 */
@@ -106,6 +114,13 @@ public class CheckOutController {
             view.displayBookingInfo(currentBooking);
         }
     }
+    
+    //추가
+    private boolean processCheckoutOnServer(int roomId) {
+        String response = sendServerRequest("CHECKOUT|" + roomId);
+        return response != null && response.startsWith("OK|");
+    }
+   //===================
 
     // =====================================================
     // ========== 서버에서 rooms.txt 읽기 ================
