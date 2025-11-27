@@ -37,6 +37,7 @@ public class RoomAdminService {
            case "ROOMS_LOAD":
                 int roomId = Integer.parseInt(parts[1]);
                 return loadRoom(roomId); 
+                
             case "ROOMS_SERVICE_USAGE":
                 int roomIdService = Integer.parseInt(parts[1]);
                 return loadRoomServices(roomIdService); 
@@ -143,6 +144,8 @@ public class RoomAdminService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+        
         // ====================== 체크아웃용 ======================
     public String loadRoom(int roomId) {
         try (BufferedReader br = new BufferedReader(new FileReader(ROOM_FILE))) {
