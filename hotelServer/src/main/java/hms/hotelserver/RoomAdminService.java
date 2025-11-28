@@ -12,10 +12,11 @@ import java.util.List;
 
 public class RoomAdminService {
     private static final String ROOM_FILE = "src/main/resources/rooms.txt";
+    
     private static List<String> roomLines = Collections.synchronizedList(new ArrayList<>());
     
     // 데이터를 확인했는지
-    private static boolean isDataLoaded = false; 
+    private static boolean isDataLoaded = false;
 
     public String processRequest(String command, String[] parts) {
         ensureDataLoaded(); 
@@ -31,8 +32,7 @@ public class RoomAdminService {
                 return updateStatus(parts);
             
             case "ROOM_LIST":
-                return getRoomListString();
-                
+                return getRoomListString();        
                 
             default:
                 return "ERROR|알 수 없는 명령";

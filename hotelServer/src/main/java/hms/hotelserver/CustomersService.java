@@ -43,13 +43,11 @@ public class CustomersService {
         Set<String> existingCustomers = new HashSet<>();
         List<String> newCustomers = new ArrayList<>();
 
-        // 기존 고객 명단 로드 (이름+전화번호를 키로 사용)
         try (BufferedReader br = new BufferedReader(new FileReader(CUSTOMER_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] data = line.split("\\|");
                 if (data.length >= 2) {
-                    // 키: "이름|전화번호"
                     existingCustomers.add(data[0] + "|" + data[1]);
                 }
             }

@@ -135,7 +135,8 @@ public class RoomAdminController {
         });
     }
     
-    private String sendRequest(String msg) {
+    //private
+    String sendRequest(String msg) {
         try (Socket socket = new Socket(SERVER_IP, SERVER_PORT);
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true); // 전송용 스트림
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) { // 수신용 스트림

@@ -71,7 +71,6 @@ public class CustomersController {
                 String name = view.getSelectedName();
                 String phone = view.getSelectedPhone();
 
-                // 등급 선택 팝업
                 String[] grades = {"일반", "VIP", "블랙리스트"};
                 String newGrade = (String) JOptionPane.showInputDialog(
                         view, "새로운 등급을 선택하세요:", "등급 변경",
@@ -99,14 +98,13 @@ public class CustomersController {
     private void refreshData() {
         view.clearTable();
         
-        List<String> responses = sendRequestForList("GET_CUSTOMERS");
+        List<String> responses = sendRequestForList("CUSTOMERS_LIST");
         
         if (responses.isEmpty()) {
              return;
         }
 
         for (String line : responses) {
-            // "이름|전화번호|등급|방문수" 파싱
             String[] data = line.split("\\|");
             if (data.length >= 4) {
                 view.addRow(data[0], data[1], data[2], data[3]);
@@ -119,7 +117,8 @@ public class CustomersController {
     }
 
     
-    private String sendRequest(String msg) {
+    //private
+    String sendRequest(String msg) {
         try (Socket socket = new Socket(SERVER_IP, SERVER_PORT);
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
@@ -134,7 +133,8 @@ public class CustomersController {
         }
     }
     
-    private List<String> sendRequestForList(String msg) {
+    //private
+    List<String> sendRequestForList(String msg) {
         List<String> resultList = new ArrayList<>();
 
         String response = sendRequest(msg);

@@ -14,6 +14,7 @@ public class AdminMenuController {
     private Runnable onBack;
     private Runnable onNavigateToRoomAdmin;
     private Runnable onNavigateToCustomer;
+    private Runnable onNavigateToServiceUsage;
 
     public AdminMenuController() {
         this.view = new AdminMenuView();
@@ -38,8 +39,7 @@ public class AdminMenuController {
 
         // 부대 서비스 버튼
         view.setServiceListener(e -> {
-            //ServiceController menuCtrl = new ServiceController();
-            //menuCtrl.showWindow(); 
+            if (onNavigateToServiceUsage != null) onNavigateToServiceUsage.run();
         });
       
       // 보고서 버튼 -> 보고서 창 띄우기
@@ -79,5 +79,8 @@ public class AdminMenuController {
     
     public void setOnNavigateToCustomer(Runnable action) {
         this.onNavigateToCustomer = action;
+    }
+    public void setOnNavigateToServiceUsage(Runnable action) {
+    this.onNavigateToServiceUsage = action; 
     }
 }

@@ -115,7 +115,7 @@ public class CheckOutController {
         }
     }
     
-    //추가
+    //추가========
     private boolean processCheckoutOnServer(int roomId) {
         String response = sendServerRequest("CHECKOUT|" + roomId);
         return response != null && response.startsWith("OK|");
@@ -167,18 +167,19 @@ private List<ExtraChargeInfo> loadExtraServicesFromServer(int roomId) {
         int rId = Integer.parseInt(parts[0]);
         if (rId != roomId) continue;
 
-        int serviceType = Integer.parseInt(parts[2]);
+        int serviceType = Integer.parseInt(parts[1]);
         double amount = Double.parseDouble(parts[3]);
 
-        String name = switch (serviceType) {
+        // 메뉴 ID를 한글 이름으로 변환
+        String menuName = switch (serviceType) {
             case 1 -> "룸 서비스";
             case 2 -> "미니바";
             case 3 -> "세탁";
             case 4 -> "식당";
-            default -> "기타";
+            default -> "기타 서비스";
         };
-
-        list.add(new ExtraChargeInfo(name, amount));
+        
+        list.add(new ExtraChargeInfo(menuName, amount));
     }
     return list;
 }

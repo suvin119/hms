@@ -45,18 +45,21 @@ public class ChargeInputView extends JPanel {
             roomId = Integer.parseInt(roomField.getText().trim());
             amount = Double.parseDouble(amountField.getText().trim());
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "객실 번호와 금액을 숫자로 정확히 입력하세요.", "입력 오류", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "객실 번호와 금액을 숫자로 정확히 입력하세요.", 
+                    "입력 오류", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         boolean success = controller.addCharge(roomId, serviceName, amount);
 
         if (success) {
-            JOptionPane.showMessageDialog(this, String.format("Room %d에 %s (%.2f원)이 추가되었습니다.", roomId, serviceName, amount), "성공", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, String.format("Room %d에 %s (%.2f원)이 추가되었습니다.", 
+                    roomId, serviceName, amount), "성공", JOptionPane.INFORMATION_MESSAGE);
             roomField.setText("");
             amountField.setText("");
         } else {
-             JOptionPane.showMessageDialog(this, "부대 비용 추가에 실패했습니다. (Server 로그 확인)", "실패", JOptionPane.ERROR_MESSAGE);
+             JOptionPane.showMessageDialog(this, "부대 비용 추가에 실패했습니다. (Server 로그 확인)", 
+                     "실패", JOptionPane.ERROR_MESSAGE);
         }
     }
     
