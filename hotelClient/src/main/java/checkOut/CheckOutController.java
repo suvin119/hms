@@ -162,18 +162,10 @@ private List<ExtraChargeInfo> loadExtraServicesFromServer(int roomId) {
         int rId = Integer.parseInt(parts[0]);
         if (rId != roomId) continue;
 
-        int serviceType = Integer.parseInt(parts[2]);
-        double amount = Double.parseDouble(parts[3]);
-
-        String name = switch (serviceType) {
-            case 1 -> "룸 서비스";
-            case 2 -> "미니바";
-            case 3 -> "세탁";
-            case 4 -> "식당";
-            default -> "기타";
-        };
-
-        list.add(new ExtraChargeInfo(name, amount));
+        String menuName = parts[1];
+        double amount = Double.parseDouble(parts[2]);
+        
+        list.add(new ExtraChargeInfo(menuName, amount));
     }
     return list;
 }
