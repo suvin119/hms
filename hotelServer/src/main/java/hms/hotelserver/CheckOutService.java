@@ -54,6 +54,8 @@ public class CheckOutService {
         }
         
         deleteServiceRecords(roomId);
+        updateReservationStatus(roomId);
+        
         return "OK|Checked Out"; 
     }
     
@@ -92,6 +94,52 @@ public class CheckOutService {
             }
         } catch (IOException e) {
             System.out.println("[Server] 서비스 파일 업데이트 실패: " + e.getMessage());
+        }
+    }
+    
+    
+    private static void updateReservationStatus(int roomId) {
+        File resFile = new File(RES_FILE);
+        if (!resFile.exists()) return;
+
+        List<String> resContent = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(resFile))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split("\\|");
+                
+                if (parts.length > 7) {
+                    try {
+                        int currentRoomId = Integer.parseInt(parts[7]); // 7번째가 방번호
+
+                        if (currentRoomId == roomId && parts[6].equals("투숙중")) {
+                            parts[6] = "완료"; 
+                            
+                            String newLine = String.join("|", parts);
+                            resContent.add(newLine);
+                        } else {
+                            resContent.add(line);
+                        }
+                    } catch (NumberFormatException e) {
+                        resContent.add(line);
+                    }
+                } else {
+                    resContent.add(line);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("[Server] 예약 파일 업데이트 실패: " + e.getMessage());
+            return;
+        }
+
+        // 파일 덮어쓰기
+        try (PrintWriter pw = new PrintWriter(new FileWriter(resFile))) {
+            for (String line : resContent) {
+                pw.println(line);
+            }
+        } catch (IOException e) {
+            System.out.println("[Server] 예약 파일 쓰기 실패: " + e.getMessage());
         }
     }
     
