@@ -46,11 +46,52 @@ public class CheckOutService {
             for (String line : fileContent) {
                 pw.println(line);
             }
-            return "OK|Checked Out"; 
+            
             
         } catch (IOException e) {
             System.out.println("[Server] 파일 쓰기 실패: " + e.getMessage());
             return "FAIL|서버 파일 쓰기 오류";
+        }
+        
+        deleteServiceRecords(roomId);
+        return "OK|Checked Out"; 
+    }
+    
+    // 체크아웃 후에 service_usage 삭제
+    private static void deleteServiceRecords(int roomId) {
+        File sFile = new File(SERVICE_FILE);
+        if (!sFile.exists()) return;
+
+        List<String> serviceContent = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(sFile))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split("\\|");
+                if (parts.length > 0) {
+                    try {
+                        int rId = Integer.parseInt(parts[0]);
+                        // 방 번호가 일치하지 않는 데이터만 남김
+                        if (rId != roomId) {
+                            serviceContent.add(line);
+                        }
+                    } catch (NumberFormatException e) {
+                        serviceContent.add(line);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("[Server] 서비스 파일 읽기 실패: " + e.getMessage());
+            return;
+        }
+
+        // 서비스 파일 덮어쓰기
+        try (PrintWriter pw = new PrintWriter(new FileWriter(sFile))) {
+            for (String line : serviceContent) {
+                pw.println(line);
+            }
+        } catch (IOException e) {
+            System.out.println("[Server] 서비스 파일 업데이트 실패: " + e.getMessage());
         }
     }
     

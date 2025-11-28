@@ -115,7 +115,7 @@ public class CheckOutController {
         }
     }
     
-    //추가
+    //추가========
     private boolean processCheckoutOnServer(int roomId) {
         String response = sendServerRequest("CHECKOUT|" + roomId);
         return response != null && response.startsWith("OK|");
