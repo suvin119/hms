@@ -17,16 +17,14 @@ public class ServiceUsageService {
     public static class ServiceUsage {
         public String roomNumber;
         public String menuId;
-        public String menuName;
         public int quantity;
         public int totalPrice;
         public String usedAt;
 
-        public ServiceUsage(String roomNumber, String menuId, String menuName,
+        public ServiceUsage(String roomNumber, String menuId,
                             int quantity, int totalPrice, String usedAt) {
             this.roomNumber = roomNumber;
             this.menuId = menuId;
-            this.menuName = menuName;
             this.quantity = quantity;
             this.totalPrice = totalPrice;
             this.usedAt = usedAt;
@@ -35,12 +33,11 @@ public class ServiceUsageService {
         public static ServiceUsage fromLine(String line) {
             String[] p = line.split("\\|");
             return new ServiceUsage(
-                    p[0],                      // roomNumber
-                    p[1],                      // menuId
-                    p[2],                      // menuName
-                    Integer.parseInt(p[3]),    // qty
-                    Integer.parseInt(p[4]),    // price
-                    p[5]                       // usedAt
+                    p[0],                   // roomNumber
+                    p[1],                   // menuId
+                    Integer.parseInt(p[2]), // quantity
+                    Integer.parseInt(p[3]), // totalPrice
+                    p[4]                    // usedAt
             );
         }
 
@@ -48,7 +45,6 @@ public class ServiceUsageService {
             return String.join("|",
                     roomNumber,
                     menuId,
-                    menuName,
                     String.valueOf(quantity),
                     String.valueOf(totalPrice),
                     usedAt
@@ -64,10 +60,10 @@ public class ServiceUsageService {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] p = line.split("\\|");
-                if (p[0].equals(menuId)) return p[1]; // 메뉴명
+                if (p.length >= 2 && p[0].equals(menuId)) return p[1];
             }
         } catch (Exception ignored) {}
-        return "Unknown";
+        return "알수없음(" + menuId + ")";
     }
 
     private int getMenuPrice(String menuId) {
@@ -75,7 +71,7 @@ public class ServiceUsageService {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] p = line.split("\\|");
-                if (p[0].equals(menuId)) return Integer.parseInt(p[3]); // 가격
+                if (p.length >= 4 && p[0].equals(menuId)) return Integer.parseInt(p[3]); 
             }
         } catch (Exception ignored) {}
         return 0;
@@ -89,6 +85,8 @@ public class ServiceUsageService {
         switch (command) {
 
             case "SERVICE_ADD_USAGE": {
+                if (parts.length < 4) return "ERROR|INVALID_ARGS";
+                
                 String room = parts[1];
                 String menuId = parts[2];
                 int qty = Integer.parseInt(parts[3]);
@@ -106,7 +104,8 @@ public class ServiceUsageService {
                 StringBuilder sb = new StringBuilder("OK|");
 
                 for (ServiceUsage u : list) {
-                    sb.append(u.menuName).append("|")
+                    String realName = getMenuName(u.menuId);
+                    sb.append(realName).append("|")
                       .append(u.totalPrice).append("#");
                 }
 
@@ -128,14 +127,13 @@ public class ServiceUsageService {
     // -----------------------------
     public void addUsage(String roomNumber, String menuId, int qty) {
 
-        String menuName = getMenuName(menuId);
         int price = getMenuPrice(menuId);
         int total = price * qty;
 
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String usedAt = LocalDateTime.now().format(fmt);
 
-        ServiceUsage usage = new ServiceUsage(roomNumber, menuId, menuName, qty, total, usedAt);
+        ServiceUsage usage = new ServiceUsage(roomNumber, menuId, qty, total, usedAt);
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_PATH, true))) {
             bw.write(usage.toLine());
