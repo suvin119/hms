@@ -60,7 +60,8 @@ public class ReservationController {
     }
     
     // 서버 통신 메소드
-    private String sendRequest(String msg) {
+    //private
+    String sendRequest(String msg) {
         try (Socket socket = new Socket(SERVER_IP, SERVER_PORT);
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {

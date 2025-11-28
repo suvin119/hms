@@ -91,7 +91,7 @@ public class ServerMain {
                 else if(command.equals("UPDATE_GRADE")){
                     response = customerService.updateCustomerGrade(parts[1], parts[2], parts[3]);
                 }
-                else if(command.equals("GET_CUSTOMERS")){
+                else if(command.equals("CUSTOMERS_LIST")){
                     response = customerService.getAllCustomers();
                 }
                 
