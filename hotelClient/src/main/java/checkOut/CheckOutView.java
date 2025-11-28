@@ -28,7 +28,6 @@ public class CheckOutView extends JPanel {
         searchPanel.add(roomField);
         searchPanel.add(searchButton);
         add(searchPanel, BorderLayout.NORTH);
-
         // ------------------ 정보 패널 ------------------
         JPanel mainPanel = new JPanel(new GridLayout(2, 1, 10, 10));
 

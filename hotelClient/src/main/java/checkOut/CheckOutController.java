@@ -87,7 +87,7 @@ public class CheckOutController {
 
             view.displayTotalBill(total);
             
-            /// 추가=========
+            /// 체크아웃 완료/실패
             boolean updateSuccess = processCheckoutOnServer(currentBooking.getRoomId());
 
             if (updateSuccess) {
@@ -105,7 +105,7 @@ public class CheckOutController {
                 view.showMessage("서버 통신 오류로 체크아웃 처리에 실패했습니다.", "오류", JOptionPane.ERROR_MESSAGE);
             }
         });
-        /////======
+
     }
 
     /** 뷰 갱신 */
@@ -147,6 +147,11 @@ private BookingInfo loadBookingFromServer(int roomId) {
     }
     return null;
 }
+
+//======================
+//부대 서비스 데이터 로딩
+//=======================
+
 
 private List<ExtraChargeInfo> loadExtraServicesFromServer(int roomId) {
     List<ExtraChargeInfo> list = new ArrayList<>();

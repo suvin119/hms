@@ -44,7 +44,7 @@ public class BookingInfo {
     public double getPromotionalDiscount() { return promotionalDiscount; }
     public List<ExtraChargeInfo> getExtraCharges() { return extraCharges; }
 
-    // Setter: 부대 서비스 목록 업데이트
+    // Setter
     public void setExtraCharges(List<ExtraChargeInfo> extraCharges) {
         this.extraCharges = extraCharges;
     }

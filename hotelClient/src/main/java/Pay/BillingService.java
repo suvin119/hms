@@ -1,5 +1,5 @@
 package Pay;
-
+ 
 import java.util.*;
 
 public class BillingService {
@@ -32,7 +32,15 @@ public class BillingService {
     public double calculateServiceTotal(int roomId) {
         return getServiceList(roomId).stream().mapToDouble(ExtraChargeInfo::getAmount).sum();
     }
-
+    
+    
+    
+    public boolean processCheckout(int roomId, java.time.LocalDate checkOutDate, double finalBill) {
+        bookings.remove(roomId);
+        serviceMap.remove(roomId);
+        return true;
+    }
+    
     public double calculateTotalBill(int roomId, java.time.LocalDate checkOutDate) {
         BookingInfo info = getBookingInfo(roomId);
         if (info == null) return -1;
@@ -40,9 +48,5 @@ public class BillingService {
         return info.getRoomId() + serviceTotal;
     }
 
-    public boolean processCheckout(int roomId, java.time.LocalDate checkOutDate, double finalBill) {
-        bookings.remove(roomId);
-        serviceMap.remove(roomId);
-        return true;
-    }
+    
 }
