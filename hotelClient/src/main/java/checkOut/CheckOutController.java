@@ -137,12 +137,18 @@ private BookingInfo loadBookingFromServer(int roomId) {
         String type = parts[1];
         double baseRate = Double.parseDouble(parts[2]);
         String status = parts[3];
+        
+        String customerName = "알수없음";
+            if (parts.length > 4) {
+                customerName = parts[4];
+            }
 
         if (id == roomId && status.equals("투숙중")) {
-            List<ExtraChargeInfo> extras = loadExtraServicesFromServer(roomId);
-            LocalDate checkIn = LocalDate.now().minusDays(1);
-            LocalDate plannedOut = LocalDate.now().plusDays(1);
-            return new BookingInfo(roomId, "고객" + roomId, checkIn, plannedOut, baseRate, 0, extras);
+                List<ExtraChargeInfo> extras = loadExtraServicesFromServer(roomId);
+                LocalDate checkIn = LocalDate.now().minusDays(1);
+                LocalDate plannedOut = LocalDate.now().plusDays(1);
+                
+                return new BookingInfo(roomId, customerName, checkIn, plannedOut, baseRate, 0, extras);
         }
     }
     return null;

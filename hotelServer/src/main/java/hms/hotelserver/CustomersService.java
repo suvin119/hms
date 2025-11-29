@@ -17,10 +17,8 @@ public class CustomersService {
         StringBuilder sb = new StringBuilder();
         File file = new File(CUSTOMER_FILE);
 
-        if (!file.exists()) {
-        return "FAIL|데이터 파일이 없습니다.";
-        }
-
+        if (!file.exists()) return "FAIL|데이터 파일이 없습니다.";
+        
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {

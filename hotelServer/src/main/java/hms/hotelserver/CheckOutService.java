@@ -151,13 +151,37 @@ public class CheckOutService {
             while ((line = br.readLine()) != null) {
                 String[] data = line.split("\\|");
                 if (Integer.parseInt(data[0]) == roomId && data[3].equals("투숙중")) {
-                    sb.append(line).append("#");
+                    String guestName = findGuestNameByRoomId(roomId);
+                    sb.append(line).append("|").append(guestName).append("#");
                 }
             }
             return sb.length() > 0 ? "OK|" + sb.toString() : "EMPTY";
         } catch (Exception e) {
             return "ERROR|rooms.txt 읽기 실패";
         }
+    }
+    
+    private String findGuestNameByRoomId(int roomId) {
+        File file = new File(RES_FILE);
+        if (!file.exists()) return "알수없음";
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split("\\|");
+                if (parts.length > 7) {
+                    int resRoomId = Integer.parseInt(parts[7]);
+                    String status = parts[6];
+                    
+                    if (resRoomId == roomId && status.equals("투숙중")) {
+                        return parts[1]; 
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("[Server] 고객 이름 조회 실패: " + e.getMessage());
+        }
+        return "알수없음";
     }
 
     public String loadRoomServices(int roomId) {

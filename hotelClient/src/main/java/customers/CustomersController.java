@@ -77,7 +77,6 @@ public class CustomersController {
                         JOptionPane.QUESTION_MESSAGE, null, grades, grades[0]);
 
                 if (newGrade != null) {
-                    // UPDATE_GRADE|이름|전화번호|새등급
                     String msg = "UPDATE_GRADE|" + name + "|" + phone + "|" + newGrade;
                     
                     String response = sendRequest(msg);

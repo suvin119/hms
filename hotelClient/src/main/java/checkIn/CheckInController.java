@@ -50,7 +50,6 @@ public class CheckInController {
                     // SUCCESS|예약번호|고객 이름|연락처|체크인날짜|체크아웃날짜|인원 수|예약상태|객실번호
                     String[] p = response.split("\\|");
                     
-                    // Model 객체 생성 - 서버에서 받은 문자열 데이터 자바 데이터로 변경
                     Reservation res = new Reservation(p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
 
                     view.setReservationInfo(res);

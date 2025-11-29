@@ -30,7 +30,6 @@ public class ReservationController {
         view.addRegisterListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // View에서 데이터 수집
                 String name = view.getName();
                 String phone = view.getPhone();
                 String inDate = view.getInDate();
@@ -43,14 +42,12 @@ public class ReservationController {
                     return;
                 }
 
-                // 3. 서버에 요청 (프로토콜: REGISTER_RESERVATION|데이터1|데이터2|...)
                 String request = String.format("REGISTER_RESERVATION|%s|%s|%s|%s|%s|%s",
                                                 name, phone, inDate, outDate, type, count);
                 
                 String response = sendRequest(request);
                 view.showMessage(response);
 
-                // 4. 성공 시 메인으로 이동
                 if (response.startsWith("SUCCESS") && onSuccessCallback != null) {
                     onSuccessCallback.run(); 
                 }

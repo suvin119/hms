@@ -23,7 +23,6 @@ public class CheckInService {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] data = line.split("\\|");
-                // 예약번호 일치 & 상태가 '예약'인 경우만 조회
                 if (data[0].equals(targetId) && data[6].equals("예약")) {
                     return "SUCCESS|" + line;
                 }
