@@ -71,9 +71,16 @@ public class ServiceUsageService {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] p = line.split("\\|");
-                if (p.length >= 4 && p[0].equals(menuId)) return Integer.parseInt(p[3]); 
+                if (p.length >= 3 && p[0].trim().equals(menuId.trim())) {
+                    return Integer.parseInt(p[2].trim()); 
+                }
             }
-        } catch (Exception ignored) {}
+        } catch (IOException e) { 
+            System.out.println("메뉴 가격 조회 실패: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.out.println("가격 데이터 오류: " + e.getMessage());
+        }
+        
         return 0;
     }
 

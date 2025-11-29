@@ -45,6 +45,7 @@ public class ServerMain {
             RoomAdminService roomService = new RoomAdminService();
             CustomersService customerService = new CustomersService();
             ServiceUsageService usageService = new ServiceUsageService();
+            MenuAdminService menuService = new MenuAdminService();
             StaffService staffService = new StaffService();
             
             String response = "ERROR|잘못된 요청";
@@ -97,6 +98,9 @@ public class ServerMain {
                 }
                 else if (command.startsWith("SERVICE_")) {
                     response = usageService.process(command, parts);
+                }
+                else if (request.startsWith("MENU_")) {
+                    response = menuService.processRequest(request);
                 }
                 
             }

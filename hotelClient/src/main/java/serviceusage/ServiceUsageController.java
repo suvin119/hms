@@ -69,41 +69,50 @@ public class ServiceUsageController {
                     return;
                 }
 
-                String msg = "SERVICE_LIST_BY_ROOM|" + room;
-                String response = sendRequest(msg);
-
-                if (response.startsWith("OK|EMPTY")) {
-                    view.showMessage("사용 기록이 없습니다.");
+                if (room.isEmpty()) {
+                    view.showMessage("객실 번호를 입력하세요.");
                     return;
                 }
-
-                if (!response.startsWith("OK|")) {
-                    view.showMessage("에러: " + response);
-                    return;
-                }
-
-                String data = response.substring(3);
-                String[] rows = data.split("#");
-
-                view.clearUsageTable();
-
-                for (String row : rows) {
-                    if (row.isBlank()) continue;
-
-                    String[] p = row.split("\\|");
-                    if (p.length < 3) continue;
-
-                    String menuName = p[1];
-                    String amount = p[2];
-
-                    view.addUsageRow(menuName, amount);
-                }
+                loadUsageData(room);
             }
         });
         
         view.addBackListener(e -> {
             if (onBack != null) onBack.run();
         });
+    }
+    
+    private void loadUsageData(String room) {
+        String msg = "SERVICE_LIST_BY_ROOM|" + room;
+        String response = sendRequest(msg);
+
+        view.clearUsageTable();
+
+        if (response.startsWith("OK|EMPTY")) return;
+
+        if (!response.startsWith("OK|")) {
+            view.showMessage("데이터 불러오기 에러: " + response);
+            return;
+        }
+
+        try {
+            String data = response.substring(3); // OK| 제거
+            String[] rows = data.split("#");
+
+            for (String row : rows) {
+                if (row.isBlank()) continue;
+
+                String[] p = row.split("\\|");
+                if (p.length < 2) continue;
+
+                String menuName = p[0];
+                String amount = p[1];
+
+                view.addUsageRow(menuName, amount);
+            }
+        } catch (Exception e) {
+            System.out.println("파싱 에러: " + e.getMessage());
+        }
     }
 
     // 서버 통신 메소드

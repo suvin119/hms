@@ -15,6 +15,7 @@ public class AdminMenuController {
     private Runnable onNavigateToRoomAdmin;
     private Runnable onNavigateToCustomer;
     private Runnable onNavigateToServiceUsage;
+    private Runnable onNavigateToMenuAdmin;
 
     public AdminMenuController() {
         this.view = new AdminMenuView();
@@ -47,17 +48,20 @@ public class AdminMenuController {
             //ReportController reportCtrl = new ReportController();
             //reportCtrl.showWindow();
         });
+        
         // 직원 관리 버튼 
         view.setUserListener(e -> {
             UserManageController ctrl = new UserManageController(null);
             ctrl.show();
         });
-        // 기타 버튼
-
-        view.setReportListener(e -> {
-            //ReportController reportCtrl = new ReportController();
-            //reportCtrl.showWindow(); 
+        
+        view.setMenuListener(e -> {
+            if (onNavigateToMenuAdmin != null) {
+            onNavigateToMenuAdmin.run();
+            }
         });
+
+        
 
         // 뒤로가기
         view.setBackListener(e -> {
@@ -83,4 +87,7 @@ public class AdminMenuController {
     public void setOnNavigateToServiceUsage(Runnable action) {
     this.onNavigateToServiceUsage = action; 
     }
+    public void setOnNavigateToMenuAdmin(Runnable listener) {
+    this.onNavigateToMenuAdmin = listener;
+}
 }

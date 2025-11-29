@@ -15,7 +15,7 @@ public class AdminMenuView extends JPanel {
     private JButton btnUser = new JButton("직원 관리");
     private JButton btnReport = new JButton("보고서");
     private JButton btnService = new JButton("부대서비스");
-    private JButton btnFood = new JButton("식음료 메뉴");
+    private JButton btnMenu = new JButton("식음료 메뉴");
     private JButton btnBack = new JButton("메인으로 돌아가기");
 
     public AdminMenuView() {
@@ -36,14 +36,14 @@ public class AdminMenuView extends JPanel {
         setFont(btnReport);
         setFont(btnUser);
         setFont(btnService);
-        setFont(btnFood);
+        setFont(btnMenu);
 
         buttonPanel.add(btnRoom);
         buttonPanel.add(btnCustomer);
         buttonPanel.add(btnReport);
         buttonPanel.add(btnUser);
         buttonPanel.add(btnService);
-        buttonPanel.add(btnFood);
+        buttonPanel.add(btnMenu);
         
         add(buttonPanel, BorderLayout.CENTER);
 
@@ -62,7 +62,7 @@ public class AdminMenuView extends JPanel {
     public void setReportListener(ActionListener l) { btnReport.addActionListener(l); }
     public void setUserListener(ActionListener l) { btnUser.addActionListener(l); }
     public void setServiceListener(ActionListener l) { btnService.addActionListener(l); }
-    public void setFoodListener(ActionListener l) { btnService.addActionListener(l); }
+    public void setMenuListener(ActionListener l) { btnMenu.addActionListener(l); }
     public void setBackListener(ActionListener l) { btnBack.addActionListener(l); }
 
     public void showMessage(String msg) {

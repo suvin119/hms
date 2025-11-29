@@ -7,6 +7,7 @@ import reservation.ReservationController;
 import customers.CustomersController;
 import roomAdmin.RoomAdminController;
 import serviceusage.ServiceUsageController;
+import menuAdmin.MenuAdminController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,6 +39,7 @@ public class Main extends JFrame {
         RoomAdminController roomCtrl = new RoomAdminController();
         CustomersController customerCtrl = new CustomersController();
         ServiceUsageController serviceCtrl = new ServiceUsageController();
+        MenuAdminController menuCtrl = new MenuAdminController();
 
 
         // 체크아웃 화면 생성 (더미 방 없음)
@@ -69,12 +71,15 @@ public class Main extends JFrame {
         adminCtrl.setOnBack(() -> cardLayout.show(mainContainer, "MAIN"));
         adminCtrl.setOnNavigateToRoomAdmin(() -> cardLayout.show(mainContainer, "ROOM_ADMIN"));
         adminCtrl.setOnNavigateToCustomer(() -> cardLayout.show(mainContainer, "CUSTOMER_ADMIN"));
+        adminCtrl.setOnNavigateToMenuAdmin(() -> cardLayout.show(mainContainer, "MENU_USAGE"));
+        adminCtrl.setOnNavigateToServiceUsage(() -> cardLayout.show(mainContainer, "SERVICE_USAGE"));
         serviceCtrl.setOnBack(() -> cardLayout.show(mainContainer, "ADMIN_MENU"));
+        
 
         
         roomCtrl.getView().addBackListener(e -> cardLayout.show(mainContainer, "ADMIN_MENU"));
         customerCtrl.getView().addBackListener(e -> cardLayout.show(mainContainer, "ADMIN_MENU"));
-        adminCtrl.setOnNavigateToServiceUsage(() -> cardLayout.show(mainContainer, "SERVICE_USAGE"));
+        menuCtrl.getView().addBackListener(e -> cardLayout.show(mainContainer, "ADMIN_MENU"));
 
 
         // 화면 등록
@@ -86,6 +91,7 @@ public class Main extends JFrame {
         mainContainer.add(roomCtrl.getView(), "ROOM_ADMIN");
         mainContainer.add(customerCtrl.getView(), "CUSTOMER_ADMIN");
         mainContainer.add(serviceCtrl.getView(), "SERVICE_USAGE");
+        mainContainer.add(menuCtrl.getView(), "MENU_USAGE");
 
 
         // 메인 표시
