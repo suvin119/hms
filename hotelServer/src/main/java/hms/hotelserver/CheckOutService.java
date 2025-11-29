@@ -10,6 +10,7 @@ public class CheckOutService {
     private static final String ROOM_FILE = "src/main/resources/rooms.txt";
     private static final String RES_FILE = "src/main/resources/reservations.txt";
     private static final String SERVICE_FILE = "src/main/resources/service_usage.txt";
+    private static final String MENU_FILE = "src/main/resources/menu.txt";
     private ServiceServer serviceServer = new ServiceServer();
     
     public static String checkoutRoom(int roomId) {
@@ -21,8 +22,7 @@ public class CheckOutService {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split("\\|");
-                
-                // 데이터 형식이 맞고, 방 번호가 일치하면 수정
+
                 if (parts.length >= 4 && Integer.parseInt(parts[0]) == roomId) {
                     String newLine = parts[0] + "|" + parts[1] + "|" + parts[2] + "|사용가능";
                     fileContent.add(newLine);
@@ -58,6 +58,7 @@ public class CheckOutService {
         
         return "OK|Checked Out"; 
     }
+    
     
     // 체크아웃 후에 service_usage 삭제
     private static void deleteServiceRecords(int roomId) {
@@ -151,8 +152,8 @@ public class CheckOutService {
             while ((line = br.readLine()) != null) {
                 String[] data = line.split("\\|");
                 if (Integer.parseInt(data[0]) == roomId && data[3].equals("투숙중")) {
-                    String guestName = findGuestNameByRoomId(roomId);
-                    sb.append(line).append("|").append(guestName).append("#");
+                    String guestInfo = findGuestInfoByRoomId(roomId);
+                    sb.append(line).append("|").append(guestInfo).append("#");
                 }
             }
             return sb.length() > 0 ? "OK|" + sb.toString() : "EMPTY";
@@ -161,9 +162,10 @@ public class CheckOutService {
         }
     }
     
-    private String findGuestNameByRoomId(int roomId) {
+    
+    private String findGuestInfoByRoomId(int roomId) {
         File file = new File(RES_FILE);
-        if (!file.exists()) return "알수없음";
+        if (!file.exists()) return "알수없음|2025-01-01|2025-01-02"; // 기본값
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
@@ -174,113 +176,54 @@ public class CheckOutService {
                     String status = parts[6];
                     
                     if (resRoomId == roomId && status.equals("투숙중")) {
-                        return parts[1]; 
-                    }
+                            return parts[1] + "|" + parts[3] + "|" + parts[4]; // 이름, 체크인 날짜, 체크아웃 날짜
+                        }
                 }
             }
         } catch (Exception e) {
             System.out.println("[Server] 고객 이름 조회 실패: " + e.getMessage());
         }
-        return "알수없음";
+        return "알수없음|2025-01-01|2025-01-02";
     }
 
+    
     public String loadRoomServices(int roomId) {
         try (BufferedReader br = new BufferedReader(new FileReader(SERVICE_FILE))) {
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = br.readLine()) != null) {
                 String[] data = line.split("\\|");
-                if (Integer.parseInt(data[0]) == roomId) {
-                    sb.append(line).append("#");
-                }
+                
+                try {
+                    int rId = Integer.parseInt(data[0]);
+                    
+                    if (rId == roomId) {
+                        String menuId = data[1];
+                        
+                        String menuName = findMenuNameById(menuId);
+                        
+                        // 101|1|2|4000|2025-11-29|콜라
+                        sb.append(line).append("|").append(menuName).append("#");
+                    }
+                } catch (NumberFormatException ignored) {}
             }
             return sb.length() > 0 ? "OK|" + sb.toString() : "EMPTY";
         } catch (Exception e) {
-            return "ERROR|service_usage.txt 읽기 실패";
+            return "ERROR|사용 내역 읽기 실패";
         }
     }
-
-    /*
-    public String findReservation(String reservationId) {
-        File file = new File(RES_FILE);
-        if (!file.exists()) return "FAIL|예약 데이터 없음";
-
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.startsWith(reservationId + "|")) {
-                    return "SUCCESS|" + line;
-                }
-            }
-        } catch (IOException e) { e.printStackTrace(); return "FAIL|파일 오류"; }
-
-        return "FAIL|예약 없음";
-    }
-
-    public String checkOut(String reservationId, String roomNumber, String actualCheckOutDate) {
-        int serviceCost = serviceServer.getTotalServiceCost(reservationId);
-        int stayCost = 50000;
-        int extraFee = 0;
-
-        String resLine = null;
-        try (BufferedReader br = new BufferedReader(new FileReader(RES_FILE))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.startsWith(reservationId + "|")) { resLine = line; break; }
-            }
-        } catch (IOException e) { e.printStackTrace(); return "FAIL|예약 읽기 실패"; }
-
-        if (resLine == null) return "FAIL|예약 없음";
-
-        String[] data = resLine.split("\\|");
-        String plannedCheckOut = data[5];
-
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date planned = sdf.parse(plannedCheckOut);
-            Date actual = sdf.parse(actualCheckOutDate);
-            if (actual.after(planned)) extraFee = 20000;
-        } catch (Exception e) { e.printStackTrace(); return "FAIL|날짜 오류"; }
-
-        int total = stayCost + serviceCost + extraFee;
-        boolean roomUpdate = updateStatus(ROOM_FILE, roomNumber, 0, 3, "청소중");
-        boolean resUpdate = updateStatus(RES_FILE, reservationId, 0, 6, "체크아웃 완료");
-
-        if (roomUpdate && resUpdate) {
-            return "SUCCESS|체크아웃 완료\n숙박료: " + stayCost +
-                    "\n부대서비스: " + serviceCost +
-                    "\n추가요금: " + extraFee +
-                    "\n총 요금: " + total;
-        } else {
-            return "FAIL|체크아웃 상태 업데이트 실패";
-        }
-    }
-
-    private boolean updateStatus(String filePath, String targetKey, int keyIndex, int targetIndex, String newValue) {
-        List<String> lines = new ArrayList<>();
-        boolean found = false;
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+    
+    private String findMenuNameById(String menuId) {
+        try (BufferedReader br = new BufferedReader(new FileReader(MENU_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split("\\|");
-                if (parts.length > targetIndex && parts[keyIndex].equals(targetKey)) {
-                    parts[targetIndex] = newValue;
-                    found = true;
-                    line = String.join("|", parts);
+                // menu.txt 구조: [0]ID | [1]이름 | [2]가격
+                if (parts.length >= 2 && parts[0].trim().equals(menuId.trim())) {
+                    return parts[1].trim(); // 메뉴 이름 반환
                 }
-                lines.add(line);
             }
-        } catch (IOException e) { e.printStackTrace(); return false; }
-
-        if (found) {
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
-                for (String line : lines) { bw.write(line); bw.newLine(); }
-            } catch (IOException e) { e.printStackTrace(); return false; }
-        }
-
-        return found;
+        } catch (Exception ignored) {}
+        return "알수없음(" + menuId + ")"; // 못 찾으면 ID라도 표시
     }
-*/
-    
-
 }
