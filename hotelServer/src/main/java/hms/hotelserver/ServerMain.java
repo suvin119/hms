@@ -80,7 +80,7 @@ public class ServerMain {
                 }
                 else if (command.equals("CHECKOUT")) {
                     response = checkOutService.checkoutRoom(Integer.parseInt(parts[1]));
-}
+                }
                 else if (command.equals("ROOMS_LOAD")){
                     response = checkOutService.loadRoom(Integer.parseInt(parts[1]));
                 }

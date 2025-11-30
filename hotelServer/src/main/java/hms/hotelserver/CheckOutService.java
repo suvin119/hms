@@ -218,12 +218,11 @@ public class CheckOutService {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split("\\|");
-                // menu.txt 구조: [0]ID | [1]이름 | [2]가격
                 if (parts.length >= 2 && parts[0].trim().equals(menuId.trim())) {
                     return parts[1].trim(); // 메뉴 이름 반환
                 }
             }
         } catch (Exception ignored) {}
-        return "알수없음(" + menuId + ")"; // 못 찾으면 ID라도 표시
+        return "알수없음(" + menuId + ")";
     }
 }

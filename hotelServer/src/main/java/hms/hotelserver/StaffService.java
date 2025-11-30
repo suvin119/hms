@@ -67,7 +67,7 @@ public class StaffService {
         for (String line : loadAllLines()) {
             Staff s = parseStaff(line);
             if (s != null && s.id.equals(id) && s.pw.equals(pw)) {
-                return "SUCCESS|" + s.role;   // 클라이언트가 기대하는 형식
+                return "SUCCESS|" + s.role;
             }
         }
         return "ERROR|INVALID_CREDENTIALS";

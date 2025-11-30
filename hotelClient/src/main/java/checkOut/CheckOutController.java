@@ -76,14 +76,13 @@ public class CheckOutController {
             LocalDate checkOut = currentBooking.getPlannedCheckOutDate();
             
             long days = ChronoUnit.DAYS.between(checkIn, checkOut);
+            if (days <= 0) days = 1;
             
+            // 객실 요금 계산
             double stayCost = currentBooking.getBaseRoomRate() * days;
             double total = stayCost;
-            
-            if (days <= 0) days = 1;
 
             // 총 금액 계산
-
             if (currentBooking.getExtraCharges() != null) {
                 for (ExtraChargeInfo extra : currentBooking.getExtraCharges()) {
                     total += extra.getAmount();
