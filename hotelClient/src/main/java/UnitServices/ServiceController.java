@@ -4,6 +4,8 @@ import Pay.BillingService;
 
 public class ServiceController {
     private BillingService server;
+    
+    
 
     public ServiceController() {
         this.server = BillingService.getInstance();
@@ -17,4 +19,6 @@ public class ServiceController {
     public double getServiceTotal(int roomId) {
         return server.calculateServiceTotal(roomId);
     }
+    
+
 }
